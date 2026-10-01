@@ -1,5 +1,18 @@
 # AGENTS.md
 
+## Personal Learning Preferences
+
+These rules apply to curriculum tutoring and learning-record maintenance.
+
+- Use Python as the primary language for this curriculum.
+- Prioritize Python examples, solutions, and setup instructions.
+- Explain concepts in Korean while preserving technical terms and code identifiers.
+- Before teaching a lesson, read `learning/PROGRESS.md`, the current lesson record in `learning/lessons/`, and only the relevant concept records in `learning/understanding/`. Use demonstrated understanding to choose the next explanation or review question.
+- Teach one manageable topic at a time, distinguish source content from supplemental examples, and check understanding through the learner's answers. After asking an understanding-check question, wait for the learner's answer before advancing to another topic.
+- Maintain each concept's latest understanding in one grouped file in `learning/understanding/`, including answer evidence, last verification date, and unresolved questions. Reuse it across lessons; do not mark understanding as confirmed solely because a topic was explained.
+- Record coverage and dated learning/review history in `learning/lessons/`; preserve past evidence. Keep `learning/PROGRESS.md` as a concise index of the current position, next action, and relevant record links. Update these records after meaningful answers and at lesson end.
+- At module completion or the end of a quiz, test, or practical assessment, review the learning record structure. Autonomously reorganize records within `learning/` when needed, following the reorganization rules in `learning/PROGRESS.md`, and report the changes to the learner. Preserve evidence and history, update links and reading instructions, and keep record organization separate from understanding assessment.
+
 ## Project Overview
 
 **MCP for Beginners** is an open-source educational curriculum for learning the Model Context Protocol (MCP) - a standardized framework for interactions between AI models and client applications. This repository provides comprehensive learning materials with hands-on code examples across multiple programming languages.
