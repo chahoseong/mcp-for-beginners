@@ -12,7 +12,7 @@
 - [Tools, Resources, Prompts](../../understanding/tools-resources-prompts.md)
 - [Transports](../../understanding/transports.md)
 - [Client Primitives](../../understanding/client-primitives.md)
-- [Security](../../understanding/security.md)
+- [Security Index](../../understanding/security/INDEX.md)
 
 ## 학습·복습 이력
 

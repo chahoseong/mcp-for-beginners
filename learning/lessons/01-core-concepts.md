@@ -27,7 +27,7 @@
 - [Tools, Resources, Prompts](../understanding/tools-resources-prompts.md)
 - [Transports](../understanding/transports.md)
 - [Client Primitives](../understanding/client-primitives.md)
-- [Security](../understanding/security.md)
+- [Security Index](../understanding/security/INDEX.md)
 - [Extensions](../understanding/extensions.md)
 - [기존 상세 이력](history/01-core-concepts-2026-10-01.md): 구체적인 답변·버전 교정 경위 확인 시에만 읽는다.
 
