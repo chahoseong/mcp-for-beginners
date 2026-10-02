@@ -7,6 +7,7 @@
 | [00 — Introduction](00-introduction.md) | 입문 범위, 이후 모듈에서 이어갈 항목 |
 | [01 — Core Concepts](01-core-concepts.md) | 학습 범위, 도구 설계 결과와 다음 수업으로 이어갈 확인 목표 |
 | [02 — Security](02-security.md) | 완료 범위, 다음 모듈로 이어갈 한계와 원문 교정 사항 |
+| [03 — Getting Started](03-getting-started.md) | 첫 서버의 Python 학습 순서, 실습 위치와 재개 지점 |
 | [history/INDEX.md](history/INDEX.md) | 과거 답변·교정 경위의 상세 확인이 필요한 경우 |
 
 현재 학습 위치는 [PROGRESS.md](../PROGRESS.md)를 기준으로 한다.
