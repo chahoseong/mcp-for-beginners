@@ -1,0 +1,11 @@
+# Lessons Index
+
+모듈별 문서는 현재 수업을 재개하기 위한 요약이다. 최신 개념 상태는 understanding/에 있다.
+
+| 문서·디렉토리 | 선택 기준 |
+| --- | --- |
+| [00 — Introduction](00-introduction.md) | 입문 범위, 이후 모듈에서 이어갈 항목 |
+| [01 — Core Concepts](01-core-concepts.md) | 학습 범위, 도구 설계 결과와 다음 수업으로 이어갈 확인 목표 |
+| [history/INDEX.md](history/INDEX.md) | 과거 답변·교정 경위의 상세 확인이 필요한 경우 |
+
+현재 학습 위치는 [PROGRESS.md](../PROGRESS.md)를 기준으로 한다.
