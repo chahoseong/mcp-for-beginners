@@ -9,49 +9,40 @@ This client demonstrates how to:
 """
 
 import asyncio
-import json
-from mcp import ClientSession, StdioServerParameters, types
-from mcp.client.stdio import stdio_client
+import sys
+from pathlib import Path
+
+from mcp import Client, MCPError, StdioServerParameters
+
 
 
 class MCPCalculatorClient:
     def __init__(self):
-        # Create server parameters for stdio connection
+        server_path = (
+            Path(__file__).resolve().parent
+            / "solution"
+            / "python"
+            / "server.py"
+        )
+
         self.server_params = StdioServerParameters(
-            command="python",  # Executable
-            args=["../01-first-server/solution/python/server.py"],  # Server script
-            env=None,  # Optional environment variables
+            command=sys.executable,
+            args=[str(server_path)]
         )
 
     async def run(self):
-        """Main client execution function"""
-        print("🚀 Starting MCP Python Client...")
+        """Connect to the server and list its tools"""
+        async with Client(self.server_params) as session:
+            print("Connected")
+            print("Protocol:", session.protocol_version)
 
-        try:
-            async with stdio_client(self.server_params) as (read, write):
-                async with ClientSession(read, write) as session:
-                    print("📡 Connecting to MCP server...")
-                    
-                    # Initialize the connection
-                    await session.initialize()
-                    print("✅ Connected to MCP server successfully!")
+            await self.list_tools(session)
+            # await self.test_calculator_operations(session)
+            #await self.list_and_test_resources(session)
+            # await self.test_errors(session)
+            await self.run_custom_requests(session)
 
-                    # List available tools
-                    await self.list_tools(session)
-                    
-                    # Test calculator operations
-                    await self.test_calculator_operations(session)
-                    
-                    # List and test resources
-                    await self.list_and_test_resources(session)
-                    
-                    print("\n✨ Client operations completed successfully!")
-
-        except Exception as e:
-            print(f"❌ Error running MCP client: {e}")
-            raise
-
-    async def list_tools(self, session: ClientSession):
+    async def list_tools(self, session: Client):
         """List all available tools on the server"""
         print("\n📋 Listing available tools:")
         try:
@@ -61,55 +52,29 @@ class MCPCalculatorClient:
         except Exception as e:
             print(f"  Error listing tools: {e}")
 
-    async def test_calculator_operations(self, session: ClientSession):
-        """Test various calculator operations"""
-        print("\n🧮 Testing Calculator Operations:")
+    async def test_calculator_operations(self, session: Client):
+        """Call add and inspect its result."""
+        result = await session.call_tool(
+            "add",
+            arguments={"a": 5, "b": 3},
+        )
 
-        operations = [
-            ("add", {"a": 5, "b": 3}, "Add 5 + 3"),
-            ("subtract", {"a": 10, "b": 4}, "Subtract 10 - 4"),
-            ("multiply", {"a": 6, "b": 7}, "Multiply 6 × 7"),
-            ("divide", {"a": 20, "b": 4}, "Divide 20 ÷ 4"),
-            ("help", {}, "Help Information"),
-        ]
+        print("content:", result.content)
+        print("structured_content:", result.structured_content)
+        print("is_error:", result.is_error)
 
-        for tool_name, arguments, description in operations:
-            try:
-                result = await session.call_tool(tool_name, arguments=arguments)
-                result_text = self.extract_text_result(result)
-                
-                if tool_name == "help":
-                    print(f"\n📖 {description}:")
-                    print(result_text)
-                else:
-                    print(f"{description} = {result_text}")
-                    
-            except Exception as e:
-                print(f"  Error calling {tool_name}: {e}")
+    async def list_and_test_resources(self, session: Client):
+        """List resources and templates, then read a greeting."""
+        resources = await session.list_resources()
+        print("Resource count:", len(resources.resources))
 
-    async def list_and_test_resources(self, session: ClientSession):
-        """List and test reading resources"""
-        print("\n📄 Listing available resources:")
-        try:
-            resources = await session.list_resources()
-            for resource in resources.resources:
-                print(f"  - {resource.name}: {resource.description}")
-                print(f"    URI: {resource.uri}")
+        templates = await session.list_resource_templates()
+        print("Resource templates:")
+        for template in templates.resource_templates:
+            print("  -", template.uri_template)
 
-            # Test reading a resource if available
-            if resources.resources:
-                first_resource = resources.resources[0]
-                print(f"\n📖 Reading resource: {first_resource.name}")
-                try:
-                    content = await session.read_resource(first_resource.uri)
-                    print(f"Resource content: {content}")
-                except Exception as e:
-                    print(f"  Error reading resource: {e}")
-            else:
-                print("  No resources available")
-                
-        except Exception as e:
-            print(f"  Error listing resources: {e}")
+        result = await session.read_resource("greeting://Mina")
+        print("Resource contents:", result.contents)
 
     def extract_text_result(self, result) -> str:
         """
@@ -138,6 +103,51 @@ class MCPCalculatorClient:
             return str(result)
         except Exception:
             return "No result"
+
+    async def test_errors(self, session: Client):
+        """Compare an error result with a raised exception."""
+
+        # 필수 인자 a를 누락한 Tool 호출
+        result = await session.call_tool(
+            "add",
+            arguments={"b": 7},
+        )
+
+        if result.is_error:
+            print("Tool failure:", result.content)
+        else:
+            print("Tool success:", result.structured_content)
+
+        # 등록되지 않은 URI의 Resource 읽기
+        try:
+            await session.read_resource("unknown://Mina")
+        except MCPError as error:
+            print("Resource exception:", error)
+            print("Error code:", error.code)
+
+    async def run_custom_requests(self, session: Client):
+        x = 5
+        y = 3
+
+        try:
+            result = await session.call_tool(
+                "add",
+                arguments={"a": x, "b": y},
+            )
+
+            expected = 8
+
+            if result.is_error:
+                print("Tool failure:", result.content)
+            else:
+                actual = result.structured_content["result"]
+                print(actual == expected)
+
+            result = await session.read_resource(f"greeting://Mina")
+            print(result.contents)
+        except MCPError as error:
+            print("Resource exception:", error)
+            print("Error code:", error.code)
 
 
 async def main():
