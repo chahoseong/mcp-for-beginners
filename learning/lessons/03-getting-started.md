@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [Client README](../../03-GettingStarted/02-client/README.md)
-- 완료 범위: 01-first-server(2026-10-02), 02-client(2026-10-04)의 Python 학습·실습·기본 과제. Module 03 전체 완료를 뜻하지 않는다.
-- 다음 행동: 다음 단원 시작 요청 시 [LLM Client README](../../03-GettingStarted/03-llm-client/README.md)를 읽고 Python 학습 계획을 소개한다.
+- 현재 원문: [LLM Client README](../../03-GettingStarted/03-llm-client/README.md)
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04)의 Python 핵심 학습·실습·기본 과제. Module 03 전체 완료를 뜻하지 않는다.
+- 다음 행동: 다음 단원 시작 요청 시 04-vscode README를 읽고 학습 계획을 세운다. 미확인 항목은 관련 내용에서 필요한 범위로 재확인한다.
 
 ## 첫 서버 단원
 
@@ -22,6 +22,16 @@
 - 응용 메서드는 정상 add 결과를 예상값과 비교하고 Resource를 읽는다. 처음에는 Tool 호출이 try 밖에 있었으며 피드백 후 두 요청을 공통 try에 넣었다. 수정한 코드와 에이전트 실행의 True·Hello, Mina!를 확인하여 기본 과제를 완료했다.
 - 현재 run은 목록 조회와 응용 메서드만 호출하고 이전 단계 실습 호출은 주석으로 보존되어 있다. 공통 catch의 Resource exception 출력 문구는 추후 MCP exception 등으로 다듬을 수 있다.
 
+## LLM Client 단원
+
+- 완료: 2026-10-04. 실습은 03-llm-client/.venv·MCP 2.2.0·openai 3.24.0과 solution/python/server.py·client.py이다. NVIDIA hosted API의 deepseek-ai/deepseek-v4.1-flash를 AsyncOpenAI로 호출하며 NVIDIA_API_KEY는 uv run --env-file로 전달한다.
+- 서버를 MCPServer로 migration하고 전체 input_schema를 모델용 parameters에 보존했다. required 누락의 모델 입력·서버 실패 영향을 설명했다. get_stock 사례에서 모델 선택·Application 실행·결과 전달 역할을 설명했으며 최신 평가는 Python Client 기록에 둔다.
+- 기본 흐름: list_tools → 모델용 정의 변환 → 첫 모델 tool_calls → MCP 실행 → assistant 호출 메시지와 tool_call_id가 있는 tool 결과 메시지 보존 → 두 번째 모델 최종 답변. add(20,2) 결과 22와 최종 답변을 제출했다.
+- 응용: 학습자가 subtract(a:int,b:int)->int를 등록·구현했다. 두 Tool이 등록된 상태에서 subtract(141,20) → 121, add(141,20) → 161의 선택 이름·인자·is_error=False·최종 답변을 각각 제출해 기본 과제를 완료했다. Tool 선택 검증용 입력·출력 코드는 안내했으며 전체 독립 구현으로 일반화하지 않는다.
+- 교재 교정·보충: 구형 ClientSession·inputSchema를 최신 API로 바꾸고 required 누락을 교정했다. 최종 결과 재전달은 Python 원문에 추가한 범위이며 세 학습 목표에 맞춰 핵심 실습에 포함하는 데 동의했다.
+- 한계: 호출 ID 연결은 실제 ID 보존을 보충한 뒤 뒤바뀐 결과를 진단하여 이해 확인했다. 복수 호출 구현·실패 결과의 모델 재전달·추가 호출 반복은 실행 확인하지 않았다. 현재 두 번째 응답이 추가 호출을 요청하면 출력만 한다.
+- [상세 이력](history/03-llm-client-2026-10-04.md)은 구체적 단계·교정 경위가 필요한 경우에만 읽는다.
+
 ## 평가 한계와 원문 교정
 
 - 안내된 예제·입력을 따른 실습과 독립 적용을 구분한다. 과제 입력·이름은 기존 예제와 같고 예외 범위는 보완 후 확인했다. 모든 개념·운영 능력을 확인한 것은 아니다.
@@ -36,3 +46,5 @@
 - [Transports](../understanding/transports.md): stdio 대기 상태와 오류 계층의 근거.
 - [첫 서버 상세 이력](history/03-first-server-2026-10-02.md), [Client 상세 이력](history/03-client-2026-10-04.md): 구체적 교정 경위가 필요한 경우에만 읽는다.
 - 2026-10-04: Client 단원 완료 시 누적 요약을 history에 보존하고 현재 문서를 두 단원의 재개 요약으로 정리했다. 이동만으로 평가를 변경하지 않았다.
+- 2026-10-04: LLM Client 완료 시 단계별 누적 요약을 history로 보존하고 환경·실행 근거·교정·한계를 재개 요약으로 정리했다. 이동만으로 이해 평가를 변경하지 않았다.
+

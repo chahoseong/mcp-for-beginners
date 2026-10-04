@@ -1,110 +1,126 @@
-from mcp import ClientSession, StdioServerParameters, types
-from mcp.client.stdio import stdio_client
-
-# llm
-import os
-from openai import OpenAI
+import asyncio
+import sys
+from pathlib import Path
 import json
+import os
 
-# Create server parameters for stdio connection
-server_params = StdioServerParameters(
-    command="mcp",  # Executable
-    args=["run", "server.py"],  # Optional command line arguments
-    env=None,  # Optional environment variables
-)
+from mcp import Client, MCPError, StdioServerParameters
+from openai import AsyncOpenAI
 
-def call_llm(prompt, functions):
-    client = OpenAI(
-        base_url=f"{os.environ['AZURE_OPENAI_ENDPOINT'].rstrip('/')}/openai/v1/",
-        api_key=os.environ["AZURE_OPENAI_API_KEY"],
-    )
-
-    print("CALLING LLM")
-    response = client.chat.completions.create(
-        messages=[
-            {
-            "role": "system",
-            "content": "You are a helpful assistant.",
-            },
-            {
-            "role": "user",
-            "content": prompt,
-            },
-        ],
-        model=os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-5.1"),
-        tools = functions,
-        max_completion_tokens=1000,
-    )
-
-    response_message = response.choices[0].message
-    
-    functions_to_call = []
-
-    if response_message.tool_calls:
-        for tool_call in response_message.tool_calls:
-            print("TOOL: ", tool_call)
-            name = tool_call.function.name
-            args = json.loads(tool_call.function.arguments)
-            functions_to_call.append({ "name": name, "args": args })
-
-    return functions_to_call
 
 def convert_to_llm_tool(tool):
-    tool_schema = {
+    return {
         "type": "function",
         "function": {
             "name": tool.name,
             "description": tool.description,
-            "type": "function",
-            "parameters": {
-                "type": "object",
-                "properties": tool.inputSchema["properties"]
-            }
-        }
+            "parameters": tool.input_schema,
+        },
     }
 
-    return tool_schema
+
+async def call_llm(messages: list[str], tools: list[dict]):
+    async with AsyncOpenAI(
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=os.environ["NVIDIA_API_KEY"],
+    ) as llm:
+        response = await llm.chat.completions.create(
+            model="deepseek-ai/deepseek-v4.1-flash",
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+            temperature=1,
+            top_p=0.95,
+            max_tokens=4096,
+            stream=False,
+        )
+
+        print("Finish reason:", response.choices[0].finish_reason)
+        return response.choices[0].message
+    
 
 async def run():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(
-            read, write
-        ) as session:
-            # Initialize the connection
-            await session.initialize()
+    server_path = Path(__file__).resolve().with_name("server.py")
 
-            # List available resources
-            resources = await session.list_resources()
-            print("LISTING RESOURCES")
-            for resource in resources:
-                print("Resource: ", resource)
+    server_params = StdioServerParameters(
+        command=sys.executable,
+        args=[str(server_path)],
+    )
 
-            # List available tools
-            tools = await session.list_tools()
-            print("LISTING TOOLS")
+    async with Client(server_params) as client:
+        print("Connected")
 
-            functions = []
+        result = await client.list_tools()
 
-            for tool in tools.tools:
-                print("Tool: ", tool.name)
-                print("Tool", tool.inputSchema["properties"])
-                functions.append(convert_to_llm_tool(tool))
-            
-            prompt = "Add 2 to 20"
+        llm_tools = [
+            convert_to_llm_tool(tool)
+            for tool in result.tools
+        ]
 
-            # ask LLM what tools to all, if any
-            functions_to_call = call_llm(prompt, functions)
+        print(json.dumps(llm_tools, indent=2, ensure_ascii=False))
 
-            # call suggested functions
-            for f in functions_to_call:
-                result = await session.call_tool(f["name"], arguments=f["args"])
-                print("TOOLS result: ", result.content)
+        # prompt = "141에서 20을 빼줘."
+        prompt = "141에서 20을 더해줘."
+
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "계산 요청은 제공된 계산 도구를 사용하세요. "
+                    "도구 결과를 받으면 이를 근거로 한국어로 답하세요."
+                ),
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ]
+        message = await call_llm(messages, llm_tools)
+
+        if message.tool_calls:
+            messages.append(message.model_dump(exclude_none=True))
+            for tool_call in message.tool_calls:
+                arguments = json.loads(tool_call.function.arguments)
+
+                print("Tool name:", tool_call.function.name)
+                print("Arguments:", arguments)
+
+                try:
+                    result = await client.call_tool(
+                        tool_call.function.name,
+                        arguments=arguments,
+                    )
+
+                    print("Tool is_error:", result.is_error)
+                    print("Tool result:", result.structured_content)
+
+                    tool_output = json.dumps(
+                        result.model_dump(mode="json"),
+                        ensure_ascii=False,
+                    )
+
+                except MCPError as error:
+                    tool_output = json.dumps(
+                        {"is_error": True, "message": str(error)},
+                        ensure_ascii=False,
+                    )
+
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": tool_output,
+                })
+
+            final_message = await call_llm(messages, llm_tools)
+
+            if final_message.tool_calls:
+                print("추가 Tool 호출 요청:", final_message.tool_calls)
+            else:
+                print("Final answer:", final_message.content)
+
+        else:
+            print("Tool 호출 요청이 없습니다.")
 
 
 if __name__ == "__main__":
-    import asyncio
-
     asyncio.run(run())
-
-
-
