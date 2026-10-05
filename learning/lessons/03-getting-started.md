@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [VS Code README](../../03-GettingStarted/04-vscode/README.md)
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료를 뜻하지 않는다.
-- 다음 행동: 다음 단원 시작 요청 시 05-stdio-server README를 읽고 기존 경험과 새 범위를 구분해 계획한다.
+- 현재 원문: [stdio Server README](../../03-GettingStarted/05-stdio-server/README.md)
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료를 뜻하지 않는다.
+- 다음 행동: 다음 단원 요청 시 06-http-streaming README를 읽고 현행 SDK·transport에 맞춰 수업을 계획한다.
 
 ## 첫 서버 단원
 
@@ -42,10 +42,21 @@
 - 완료 범위·한계: 등록·시작·중지/재시작·로그 확인을 안내에 따라 수행했고 두 Tool의 실제 실행을 확인했다. 독립 설정 작성·버그 수정·종료 코드 해석까지 평가하지 않는다. Resources·Prompts 사용은 선택 확장으로 남겼다.
 - [상세 진단 이력](history/03-vscode-2026-10-05.md)은 구체적인 실패·교정 경위가 필요한 경우에만 읽는다.
 
+## stdio Server 단원
+
+- 완료: 2026-10-05. 별도 05-stdio-server/.venv(Python 3.12.10·MCP 2.2.0), practice/server.py, Node v24.13.1·Inspector v2.9.0을 사용했다. MCPServer의 명시적 stdio·stderr logger와 네 Tool을 작성했다.
+- Inspector: greeting(Mina), sum(8,13)=21, product(7,6)=42, server_info 결과와 필수 a 누락 실패(isError:true·CLI 종료 코드5)를 제출했다. 로그·실패 여부·계산 정확성을 구분했으며 product(4,5)의 로그9 사례는 집중 후속 질문 후 구현 점검을 제안했다. 종료 코드0의 정확성 한계는 보충한 범위이다.
+- SDK 교정: 함수 내부 기본 print·stderr print 모두 정상 결과21·종료 코드0이었다. SDK 2.2.0 stdio의 일반 stdout→stderr 보호 구현을 확인해 초기 실험 전제를 교정했다. 보호 원리를 독립 설명한 것은 아니며 로그의 명시적 stderr 지정을 유지한다.
+- VS Code: .vscode/mcp.json의 기존 calculator를 보존하고 stdio-practice를 추가했다. DEBUG print 제거를 확인했고 Copilot의 calculate_product 호출 카드와 최종52를 제출했다. 카드의 serverName/toolName을 실제 인자·서버 로그와 동일시하지 않는다.
+- 원문 과제: 외부 농담 API Tool을 추가해 HTTP403 traceback을 확인했다. 에이전트 재현·헤더 요청 검증 후 User-Agent·Accept와 ToolError로 보완했고 학습자가 재호출 성공·농담 본문을 제출했다. RuntimeError의 일반 메시지와 예상 실패용 ToolError의 차이를 SDK 코드로 설명했다.
+- 마지막 확인: 학습자는 Inspector↔Server의 stdio 지정과 Server↔외부 API의 HTTP 통신을 코드·배치 상황으로 구분했다. 개념의 최신 근거는 Transports에 둔다. 같은 컴퓨터만으로 transport가 결정되지 않고 외부 URL은 HTTPS라는 점을 보충했다.
+- 원문 보완·한계: Python 본문의 API 혼합·3.8 요구조건·웹 서버 필요 문장·Claude 설정을 수업에서 교정했다. 로컬 stdio/원격 Streamable HTTP와 구형 HTTP+SSE를 구분했다. 기본 구현·디버깅·VS Code 사용·transport 구분과 과제를 완료했으나 독립 API 설계·bug 수정·breakpoint attach·ToolError 실패 재실행까지 평가하지 않는다.
+- [상세 이력](history/03-stdio-server-2026-10-05.md)은 SDK 출력 보호·CLI 오류·HTTP403 교정 경위가 필요한 경우에만 읽는다.
+
 ## 평가 한계와 원문 교정
 
 - 안내된 예제·입력을 따른 실습과 독립 적용을 구분한다. 과제 입력·이름은 기존 예제와 같고 예외 범위는 보완 후 확인했다. 모든 개념·운영 능력을 확인한 것은 아니다.
-- async with·asyncio.run의 독립 설명과 종료 코드0 해석은 미확인이다. VS Code 단원의 로그 사례에서 실제 실행과 계산 정확성 구분은 진단 답변으로 확인했다.
+- async with·asyncio.run의 독립 설명은 미확인이다. 종료 코드0은 stdio 단원에서 답변 후 Inspector 정상 처리와 계산 정확성의 차이를 보충했다. 독립 재확인은 남아 있으며 로그 기반 계산 오류 진단의 최신 근거는 Python Client를 따른다.
 - SDK v1·v2 차이와 MCP 프로토콜 버전을 구분한다. 원문의 ClientSession.initialize 중첩 연결을 최신 Client로 보완했다. Resource 결과·템플릿 조회와 is_error 처리도 설치된 API를 기준으로 교정했다.
 - Inspector UI를 설명하기 전 조작을 질문했던 맥락 부족을 보완했다. 필요한 UI·용어를 먼저 가르친다.
 
@@ -58,5 +69,8 @@
 - 2026-10-04: Client 단원 완료 시 누적 요약을 history에 보존하고 현재 문서를 두 단원의 재개 요약으로 정리했다. 이동만으로 평가를 변경하지 않았다.
 - 2026-10-04: LLM Client 완료 시 단계별 누적 요약을 history로 보존하고 환경·실행 근거·교정·한계를 재개 요약으로 정리했다. 이동만으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: VS Code 완료 시 상세 실패·교정 기록을 history로 보존하고 현재 설정·실행 근거·한계를 재개 요약으로 정리했다. 파일 이동만으로 이해 평가를 변경하지 않았다.
+- 2026-10-05: stdio Server 완료 시 누적 실습·SDK 출력 보호·HTTP403 교정 경위를 history로 보존하고 모듈을 재개 요약으로 정리했다. 이동으로 이해 평가를 변경하지 않았다.
+
+
 
 

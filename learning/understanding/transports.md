@@ -15,9 +15,9 @@
 | 도구 실패 정보의 표준화 범위 | 01 | 이해 확인 | 실패 설명 문구의 언어가 바뀌어도 isError: true로 실패를 판단하는 방식은 바뀌지 않는다고 답했다. | 2026-10-01 | 없음. |
 | 요청별 메타데이터와 Stateless | 01 | 이해 확인 | 매 요청에 버전 정보를 포함해야 한다고 답했고, 보충 설명 후 Stateless 서버도 학습 기록을 데이터베이스에 저장하고 다음 요청에서 조회할 수 있다고 확인했다. | 2026-10-01 | 실제 요청 메타데이터 작성은 아직 평가하지 않았다. |
 | server/discover와 개별 목록 조회 | 01 | 이해 확인 | get_weather의 이름·필수 인자 명세를 얻으려면 tools/list를 사용한다고 정확히 답했다. | 2026-10-01 | 서버 발견 응답의 상세 필드와 버전 호환 처리 구현은 아직 평가하지 않았다. |
-| stdio의 입력·출력·로그 | 01 | 이해 확인 | stdout의 디버깅 문구를 Client가 서버 메시지로 읽지만 규약에 맞지 않아 처리에 문제가 생긴다고 설명했다. 반드시 도구 실행 실패로 분류되는 것은 아니며 파싱·연결 오류 등은 구현별로 다를 수 있음을 보충한다. | 2026-10-01 | 실제 서버 로그 분리 구현은 아직 평가하지 않았다. |
+| stdio의 입력·출력·로그 | 01·03 | 이해 확인 | 2026-10-01: stdout의 디버깅 문구를 Client가 MCP 메시지로 읽어 처리에 문제가 생긴다고 설명했다. 2026-10-05: stderr INFO 사례에서 ready는 시작 안내, add called는 a=6,b=9 처리 기록, is_error=False는 도구 실패 미보고, result=15는 계산 정확성 근거로 구분했다. stderr 출력 자체를 오류로 취급하지 않았다. 설명 직후 제공된 로그·결과를 해석한 근거이며 독립 구현으로 일반화하지 않는다. ready 로그만으로 MCP 연결 완료를 증명할 수 없고 is_error=False만으로 계산 정확성을 보장하지 않음을 평가 시 보충했다. | 2026-10-05 | 실제 서버 로그 분리 구현은 아직 평가하지 않았다. |
 | stdio 서버의 대기 상태 | 03 | 이해 확인 | 최소 서버에 출력이 없는 상황을 표준 입력을 기다리며 대기하기 때문이라고 설명했다. 직전 설명과 가까운 사례에 대한 답변이며 독립 오류 진단의 근거는 아니다. | 2026-10-02 | 실제 Client 연결·요청 처리 결과는 Inspector 실습에서 확인한다. |
-| Streamable HTTP와 stdio | 01 | 적용 확인 | 다른 컴퓨터의 Python MCP Server에는 Streamable HTTP를 선택하고 JSON-RPC 요청 본문 형식은 유지할 수 있다고 답했다. | 2026-10-01 | HTTP 전용 필수 헤더 구현은 아직 평가하지 않았다. |
+| Streamable HTTP와 stdio | 01·03 | 적용 확인 | 2026-10-01: 다른 컴퓨터의 Python MCP Server에는 Streamable HTTP를 선택하고 JSON-RPC 요청 본문 형식은 유지할 수 있다고 답했다. 2026-10-05: 실제 과제에서 Inspector↔server.py는 같은 컴퓨터·transport=stdio 지정, server.py↔외부 API는 네트워크상의 HTTP API 지원을 근거로 구분했다. 코드·배치 상황의 이유를 스스로 제시했으며 전체 구현은 안내된 실습이다. 같은 컴퓨터에서도 HTTP가 가능하고 해당 URL은 HTTPS임을 평가 시 보충했다. 실제 외부 API HTTP와 MCP Streamable HTTP를 동일시하지 않는다. | 2026-10-05 | HTTP 전용 필수 헤더 구현·원격 MCP 배포는 아직 평가하지 않았다. |
 | Streamable HTTP의 SSE 응답 | 01 | 이해 확인 | SSE를 사용해도 진행 알림과 최종 응답을 임의 일반 문자열로 보내면 안 된다고 정확히 답했다. | 2026-10-01 | 실제 SSE 이벤트 파싱 구현은 아직 평가하지 않았다. |
 | HTTP+SSE와 Streamable HTTP의 차이 | 01 | 이해 확인 | 2026-07-28에서 JSON 하나를 받는 경우 별도 SSE 수신 연결 없이 일반 HTTP 응답으로 JSON을 보내면 된다고 정확히 답했다. | 2026-10-01 | 구버전 클라이언트와의 상호운용 구현은 아직 평가하지 않았다. |
 | Streamable HTTP 요청 헤더 | 01 | 적용 확인 | resources/read로 학습 노트를 읽을 때 Mcp-Name에 대상 URI study://notes/python-basics를 넣는다고 답했다. | 2026-10-01 | 실제 HTTP 헤더 작성 및 본문 불일치 처리는 아직 평가하지 않았다. |
@@ -25,8 +25,9 @@
 
 ## 다음 학습에서 확인할 범위
 
+- 2026-10-05 stdio 실습: 학습자가 함수 내부 기본 print와 file=sys.stderr print 두 경우 모두 result21·isError:false·CLI 종료 코드0을 제출했다. 현재 저장된 코드의 stderr 지정을 확인했다. 설치된 MCP 2.2.0의 server/stdio.py에서 stdio 통신 중 원래 stdout을 프로토콜용으로 보존하고 일반 fd1 출력을 stderr로 돌리는 보호 동작을 확인해 설명했다. Client가 오류를 무시한 사례로 단정하지 않는다. 첫 실행 당시 파일 상태는 별도로 보존하지 않았고 보호 동작 원리의 독립 설명은 아직 평가하지 않았다. 명세상 MCP 채널의 일반 출력 금지와 SDK 보호를 구분하며 명시적 stderr logging을 유지한다.
 - 2026-10-02 Module 03: add의 필수 인자 누락 검증과 divide의 본문 계산 오류를 구분했다. 상세 근거는 [Tools, Resources, Prompts](tools-resources-prompts.md)의 입력 검증과 함수 실행 오류 항목에 둔다. Inspector의 요약 오류만으로 JSON-RPC 오류와 result.isError를 분류하지 않았으며 기존 평가를 변경하지 않는다.
-- stdio·Streamable HTTP의 선택과 기본 형식 유지는 확인했다. 실제 전송 구현은 아직 수행하지 않았다.
+- stdio·Streamable HTTP의 선택과 기본 형식 유지는 확인했다. SDK stdio 서버·Inspector·VS Code 실습과 서버 내부 외부 HTTP 호출은 수행했으며, 원격 MCP의 Streamable HTTP 전송 구현은 아직 수행하지 않았다.
 - SSE의 메시지 형식과 두 전송 방식의 구조 차이를 확인했다. 구버전 클라이언트와의 세부 이행 절차는 아직 다루지 않았다.
 - JSON-RPC 예시는 보았으나 메시지 작성이나 전송 구현 실습은 하지 않았다.
 
