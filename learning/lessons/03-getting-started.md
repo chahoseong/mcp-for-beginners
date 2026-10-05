@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [HTTP Streaming README](../../03-GettingStarted/06-http-streaming/README.md)
+- 현재 위치: [Foundry Toolkit README](../../03-GettingStarted/07-aitk/README.md)는 선택으로 남기고 건너뛰었다. 다음은 [Testing & Debugging](../../03-GettingStarted/08-testing/README.md)이며 아직 수업을 시작하지 않았다.
 - 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
-- 다음 행동: 2026-10-05 학습자 요청으로 HTTP Streaming 단원을 종료했다. 선택 hosted 연결·실제 구형 migration은 미실습이며 다음 단원은 학습자가 지정할 때 시작한다.
+- 다음 행동: 학습자 요청 시08 문서 검토·계획을 준비한다. 07은 선택 보류이며06은 2026-10-05 종료했다. 선택 hosted 연결·실제 구형 migration은 미실습이다.
 
 ## 첫 서버 단원
 
@@ -61,6 +61,13 @@
 - 보안: CORS의 웹페이지/서버 배경과 허용 대상 혼동을 그림으로 보충했다. 설명 반복 질문은 폐기했고 그림 뒤 이해했다는 자기 보고만으로 상태를 올리지 않았다. 이후 팀 서버 사례에서 사용자 인증·요청 권한 검사를 제안했다. 최신 평가·한계는 Security 기록을 따른다.
 - 교정·범위: ctx.info 로그 대신 report_progress/progress_callback, async의 time.sleep 대신 asyncio.sleep, Requests 줄 읽기 buffering·경과 시간 관찰을 보충했다. 마지막 migration 개요는 현재 요청별 POST·SDK 호환·Client URL·알림/최종 결과 점검으로 설명한다. 실제 구형 Client migration·TLS/인증/CORS 배포는 미실습, migration 독립 설명은 미평가이다. Parallel hosted 연결은 선택 확장이다.
 - [상세 이력](history/03-http-streaming-2026-10-05.md)은 초기 계획·관찰 값·CORS 교정 경위가 필요한 경우에만 읽는다.
+
+## Foundry Toolkit 진행 여부 검토
+
+- 결정: 2026-10-05 학습자가 선택으로 남기고 건너뛰기로 했다. 설치·실습 없이 문서 검토만 수행했으며 학습 목표 달성이나 개념 이해 확인을 의미하지 않는다. 아래 권고는 재개할 때 참고한다.
+- 2026-10-05: README·solution의 세 목표(특정 Toolkit 연결·agent 도구 설정·자연어 사용)를03 LLM Client/04 Copilot 경험과 비교했다. 새 핵심 MCP 개념보다 별도 Host UI·모델/지침 설정·복수 도구 연계 관찰에 가치가 있어 기존 서버 재사용 축약 실습을 권한다. 학습자의 진행 결정·실습은 아직 없다.
+- 최신 공식 문서는 local prompt의 외부 모델·local MCP와 NIM/Custom BYOM을 지원하므로 GPT-5.1 Foundry 배포는 이 목표의 필수조건이 아니다. 사용 중인 DeepSeek 모델의 Toolkit Tool Calling·SDK2.2/2026-07-28 상호운용은 실제 확인이 필요하다. README UI 경로는 최신 문서와 다르고 FastMCP 예제를 현재 MCPServer 환경에 맞춰야 하며 F5는 생성 프로젝트 launch 설정을 확인해야 한다.
+- 진행한다면 모델 연결→기존 서버·도구 선택과 지침 설정→multiply 결과를 subtract에 전달하는 의존 호출 검증→새 Tool 추가·발견 확인으로 축약한다. 설치·Azure 생성·API 실행은 하지 않았다.
 
 ## 평가 한계와 원문 교정
 
