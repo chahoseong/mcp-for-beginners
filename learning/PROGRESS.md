@@ -4,11 +4,11 @@
 
 ## 현재 위치
 
-- 마지막 학습일: 2026-10-04 (Asia/Seoul)
-- 현재 모듈: [03 — LLM Client](../03-GettingStarted/03-llm-client/README.md)
+- 마지막 학습일: 2026-10-05 (Asia/Seoul)
+- 현재 모듈: [03 — VS Code](../03-GettingStarted/04-vscode/README.md)
 - 현재 수업 기록: [Module 03](lessons/03-getting-started.md)
-- 진행: 03-llm-client의 Python 핵심 실습과 기본 응용 과제를 완료했다. add/subtract 선택·인자·MCP 실행 결과·최종 LLM 답변을 각각 확인했다. Module 03 전체 완료는 아니다.
-- 실습 위치: [03-llm-client/](../03-GettingStarted/03-llm-client/)의 별도 .venv·MCP 2.2.0·openai 3.24.0, solution/python의 server.py·client.py. NVIDIA hosted API의 deepseek-ai/deepseek-v4.1-flash를 사용하고 키는 uv run --env-file로 전달한다.
-- 다음 행동: 다음 단원 시작 요청 시 03-GettingStarted/04-vscode/README.md를 읽고 학습 계획을 소개한다.
+- 진행: 04-vscode 핵심 학습·실습을 완료했다. 서버 등록·시작·재시작·로그 확인과 Copilot의 add/subtract 실제 실행을 확인했다. 잘못된 서버 결과를 추적하는 진단 답변도 확인했다. Module 03 전체 완료는 아니다.
+- 실습 위치: 이전 단원의 03-llm-client/.venv Python과 solution/python/server.py를 재사용한다. 서버 시작·출력 문제 진단 중 .vscode/mcp.json을 작성하고 원래 .mcp.json은 .mcp.json.backup으로 보존했다.
+- 다음 행동: 다음 단원 시작 요청 시 03-GettingStarted/05-stdio-server/README.md를 읽고 Python 중심의 학습 계획을 세운다. 기존 stdio 경험과 원문의 새 범위를 구분한다.
 - 필요한 개념 기록: [Python Client](understanding/python-client.md), [Tools, Resources, Prompts](understanding/tools-resources-prompts.md).
 - 이어갈 미해결 항목: 종료 코드 0과 기능 정확성 구분, async with·asyncio.run의 독립 설명, LLM에 실패 결과 전달·복수/반복 호출 구현. 기존 안내 실습을 전체 독립 구현 능력으로 일반화하지 않는다.

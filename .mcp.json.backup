@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "calculator": {
+      "type": "stdio",
+      "command": "C:/Users/chahoseong/mcp-for-beginners/03-GettingStarted/03-llm-client/.venv/Scripts/python.exe",
+      "args": [
+        "C:/Users/chahoseong/mcp-for-beginners/03-GettingStarted/03-llm-client/solution/python/server.py"
+      ]
+    }
+  }
+}

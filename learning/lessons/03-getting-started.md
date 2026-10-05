@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [LLM Client README](../../03-GettingStarted/03-llm-client/README.md)
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04)의 Python 핵심 학습·실습·기본 과제. Module 03 전체 완료를 뜻하지 않는다.
-- 다음 행동: 다음 단원 시작 요청 시 04-vscode README를 읽고 학습 계획을 세운다. 미확인 항목은 관련 내용에서 필요한 범위로 재확인한다.
+- 현재 원문: [VS Code README](../../03-GettingStarted/04-vscode/README.md)
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료를 뜻하지 않는다.
+- 다음 행동: 다음 단원 시작 요청 시 05-stdio-server README를 읽고 기존 경험과 새 범위를 구분해 계획한다.
 
 ## 첫 서버 단원
 
@@ -32,10 +32,20 @@
 - 한계: 호출 ID 연결은 실제 ID 보존을 보충한 뒤 뒤바뀐 결과를 진단하여 이해 확인했다. 복수 호출 구현·실패 결과의 모델 재전달·추가 호출 반복은 실행 확인하지 않았다. 현재 두 번째 응답이 추가 호출을 요청하면 출력만 한다.
 - [상세 이력](history/03-llm-client-2026-10-04.md)은 구체적 단계·교정 경위가 필요한 경우에만 읽는다.
 
+## VS Code 단원
+
+- 완료: 2026-10-05. VS Code 1.140.0·x64, 저장소 전체 workspace, Copilot Chat을 사용한다. 기존 03-llm-client/.venv와 solution/python/server.py를 재사용했다. 새 Server·LLM Client를 만들지 않았다.
+- 실제 설정: workspace .vscode/mcp.json의 servers.calculator에 stdio·가상환경 Python·server.py 절대 경로를 지정했다. 처음 사용한 .mcp.json은 .mcp.json.backup에 보존했다. 현재 기본 설정을 바꾸지 않고 이 재개 위치를 따른다.
+- 진단: 같은 실행 경로의 Python Client는 정상 연결됐으나 초기 VS Code 시작·출력에 문제가 있었다. 호환 설정에서 로그가 표시되어 Chat session runtime 생성 전 시작 불가·Send a message first 오류를 확인했다. Chat 메시지를 먼저 보낸 뒤 시작 성공을 보고했다. 설정 형식 변경과 초기 출력 문제의 인과는 확정하지 않는다.
+- 실행 검증: Chat에는 serverName/toolName 메타데이터만 표시되었다. 에이전트가 서버 함수에 파일 logger를 추가했고 tool_calls.log의 add(34,19)=53·subtract(87,29)=58 새 행과 Copilot 최종 답변을 확인했다. 에이전트 확인 호출 add(1,2)=3은 학습자의 Copilot 실행 증거와 구분한다.
+- 이해 확인: 다른 MCP 앱에서도 Client를 통해 기존 Server를 재사용할 수 있다고 설명했다. 마지막 오류 사례에서 최종 답변부터 거꾸로 추적하고 서버 로그·반환62를 근거로 subtract(50,12)의 계산 오류를 판단했다. 최신 평가 근거는 Architecture·Python Client 기록을 따른다.
+- 완료 범위·한계: 등록·시작·중지/재시작·로그 확인을 안내에 따라 수행했고 두 Tool의 실제 실행을 확인했다. 독립 설정 작성·버그 수정·종료 코드 해석까지 평가하지 않는다. Resources·Prompts 사용은 선택 확장으로 남겼다.
+- [상세 진단 이력](history/03-vscode-2026-10-05.md)은 구체적인 실패·교정 경위가 필요한 경우에만 읽는다.
+
 ## 평가 한계와 원문 교정
 
 - 안내된 예제·입력을 따른 실습과 독립 적용을 구분한다. 과제 입력·이름은 기존 예제와 같고 예외 범위는 보완 후 확인했다. 모든 개념·운영 능력을 확인한 것은 아니다.
-- async with·asyncio.run의 의미는 설명·실행했으나 독립 설명은 미확인이다. 종료 코드 0과 기능 정확성 구분도 직접 재확인하지 않았다.
+- async with·asyncio.run의 독립 설명과 종료 코드0 해석은 미확인이다. VS Code 단원의 로그 사례에서 실제 실행과 계산 정확성 구분은 진단 답변으로 확인했다.
 - SDK v1·v2 차이와 MCP 프로토콜 버전을 구분한다. 원문의 ClientSession.initialize 중첩 연결을 최신 Client로 보완했다. Resource 결과·템플릿 조회와 is_error 처리도 설치된 API를 기준으로 교정했다.
 - Inspector UI를 설명하기 전 조작을 질문했던 맥락 부족을 보완했다. 필요한 UI·용어를 먼저 가르친다.
 
@@ -47,4 +57,6 @@
 - [첫 서버 상세 이력](history/03-first-server-2026-10-02.md), [Client 상세 이력](history/03-client-2026-10-04.md): 구체적 교정 경위가 필요한 경우에만 읽는다.
 - 2026-10-04: Client 단원 완료 시 누적 요약을 history에 보존하고 현재 문서를 두 단원의 재개 요약으로 정리했다. 이동만으로 평가를 변경하지 않았다.
 - 2026-10-04: LLM Client 완료 시 단계별 누적 요약을 history로 보존하고 환경·실행 근거·교정·한계를 재개 요약으로 정리했다. 이동만으로 이해 평가를 변경하지 않았다.
+- 2026-10-05: VS Code 완료 시 상세 실패·교정 기록을 history로 보존하고 현재 설정·실행 근거·한계를 재개 요약으로 정리했다. 파일 이동만으로 이해 평가를 변경하지 않았다.
+
 
