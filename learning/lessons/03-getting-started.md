@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [stdio Server README](../../03-GettingStarted/05-stdio-server/README.md)
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료를 뜻하지 않는다.
-- 다음 행동: 다음 단원 요청 시 06-http-streaming README를 읽고 현행 SDK·transport에 맞춰 수업을 계획한다.
+- 현재 원문: [HTTP Streaming README](../../03-GettingStarted/06-http-streaming/README.md)
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
+- 다음 행동: 2026-10-05 학습자 요청으로 HTTP Streaming 단원을 종료했다. 선택 hosted 연결·실제 구형 migration은 미실습이며 다음 단원은 학습자가 지정할 때 시작한다.
 
 ## 첫 서버 단원
 
@@ -53,6 +53,15 @@
 - 원문 보완·한계: Python 본문의 API 혼합·3.8 요구조건·웹 서버 필요 문장·Claude 설정을 수업에서 교정했다. 로컬 stdio/원격 Streamable HTTP와 구형 HTTP+SSE를 구분했다. 기본 구현·디버깅·VS Code 사용·transport 구분과 과제를 완료했으나 독립 API 설계·bug 수정·breakpoint attach·ToolError 실패 재실행까지 평가하지 않는다.
 - [상세 이력](history/03-stdio-server-2026-10-05.md)은 SDK 출력 보호·CLI 오류·HTTP403 교정 경위가 필요한 경우에만 읽는다.
 
+## HTTP Streaming 단원
+
+- 실습: 별도06 .venv(Python3.12.10·MCP2.2.0), practice/http_server.py·http_client.py·mcp_server.py·mcp_client.py. 일반 HTTP SSE와 MCP Streamable HTTP를 분리했다.
+- 실행·이해: 일반 HTTP의 약1초 간격 출력과 response.text 전체 출력5.06초를 비교해 Client 읽기 차이를 설명했다. MCP URL 연결·add21, 세 진행 알림1.02/2.04/3.05초·최종3.11초를 확인했다. 진행3/3 뒤 저장 실패 사례에서 최종 오류를 근거로 전체 실패를 판단했다.
+- 원문 과제 완료: 학습자가 files:list[str]·enumerate·len(files)·join 반환을 구현하고 네 항목·두 항목의 진행량·최종 결과를 제출했다. 두 번째 목록에 남은 항목은 피드백 후 제거했다. 실제 파일 I/O는 없고 기존 코드·요구사항 기반 수정이다.
+- 보안: CORS의 웹페이지/서버 배경과 허용 대상 혼동을 그림으로 보충했다. 설명 반복 질문은 폐기했고 그림 뒤 이해했다는 자기 보고만으로 상태를 올리지 않았다. 이후 팀 서버 사례에서 사용자 인증·요청 권한 검사를 제안했다. 최신 평가·한계는 Security 기록을 따른다.
+- 교정·범위: ctx.info 로그 대신 report_progress/progress_callback, async의 time.sleep 대신 asyncio.sleep, Requests 줄 읽기 buffering·경과 시간 관찰을 보충했다. 마지막 migration 개요는 현재 요청별 POST·SDK 호환·Client URL·알림/최종 결과 점검으로 설명한다. 실제 구형 Client migration·TLS/인증/CORS 배포는 미실습, migration 독립 설명은 미평가이다. Parallel hosted 연결은 선택 확장이다.
+- [상세 이력](history/03-http-streaming-2026-10-05.md)은 초기 계획·관찰 값·CORS 교정 경위가 필요한 경우에만 읽는다.
+
 ## 평가 한계와 원문 교정
 
 - 안내된 예제·입력을 따른 실습과 독립 적용을 구분한다. 과제 입력·이름은 기존 예제와 같고 예외 범위는 보완 후 확인했다. 모든 개념·운영 능력을 확인한 것은 아니다.
@@ -70,6 +79,7 @@
 - 2026-10-04: LLM Client 완료 시 단계별 누적 요약을 history로 보존하고 환경·실행 근거·교정·한계를 재개 요약으로 정리했다. 이동만으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: VS Code 완료 시 상세 실패·교정 기록을 history로 보존하고 현재 설정·실행 근거·한계를 재개 요약으로 정리했다. 파일 이동만으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: stdio Server 완료 시 누적 실습·SDK 출력 보호·HTTP403 교정 경위를 history로 보존하고 모듈을 재개 요약으로 정리했다. 이동으로 이해 평가를 변경하지 않았다.
+- 2026-10-05: HTTP Streaming 마무리 시 누적 계획·관찰·CORS 보충을 history로 보존하고 환경·핵심 실행·과제·보안·한계를 요약했다. 상위 history INDEX를 갱신했으며 이동만으로 평가를 바꾸지 않았다.
 
 
 

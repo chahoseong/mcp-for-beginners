@@ -5,10 +5,10 @@
 ## 현재 위치
 
 - 마지막 학습일: 2026-10-05 (Asia/Seoul)
-- 현재 모듈: [03 — stdio Server](../03-GettingStarted/05-stdio-server/README.md)
+- 현재 모듈: [03 — HTTP Streaming](../03-GettingStarted/06-http-streaming/README.md)
 - 현재 수업 기록: [Module 03](lessons/03-getting-started.md)
-- 진행: 05-stdio-server 핵심 학습·실습과 외부 API 과제를 완료했다. 학습자가 Inspector↔Server의 stdio 설정과 Server↔API의 HTTP 통신을 코드·배치 근거로 구분했다. Module 03 전체 완료는 아니다.
-- 실습 위치: 05-stdio-server/.venv·practice/server.py. 이전 calculator는 .vscode/mcp.json에 등록되어 있다.
-- 다음 행동: 다음 단원 요청 시 03-GettingStarted/06-http-streaming/README.md를 읽고 Python 중심 계획을 세운다. 구형 HTTP+SSE·현행 Streamable HTTP·일반 외부 API 요청을 구분하고 최신 SDK와 교재 차이를 확인한다.
+- 진행: 2026-10-05 학습자의 명시적 요청으로 HTTP Streaming 단원을 종료했다. 일반 HTTP 비교·MCP URL 연결·진행 알림·가변 목록 과제와 보안·migration 개요를 마쳤다. migration 독립 설명·실제 구형 전환과 원격 보안 배포는 미확인이다.
+- 실습 위치: 06-http-streaming/.venv(Python3.12.10·MCP2.2.0), practice/http_server.py·http_client.py·mcp_server.py·mcp_client.py.
+- 다음 행동: 학습자가 단원을 지정하면 다음 수업을 준비한다. 선택 hosted 연결은 미실습이며 CORS의 독립 적용은 확인하지 않았다. 전체 독립 구현·실제 보안 배포 능력으로 일반화하지 않는다.
 - 필요한 개념 기록: [Transports](understanding/transports.md), [Python Client](understanding/python-client.md).
 - 이어갈 미해결 항목: 종료 코드0의 정확성 한계는 보충 후 다른 사례에서 재확인, async with·asyncio.run의 독립 설명, LLM에 실패 결과 전달·복수/반복 호출 구현. 기존 안내 실습을 전체 독립 구현 능력으로 일반화하지 않는다.
