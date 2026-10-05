@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 위치: [Foundry Toolkit README](../../03-GettingStarted/07-aitk/README.md)는 선택으로 남기고 건너뛰었다. 다음은 [Testing & Debugging](../../03-GettingStarted/08-testing/README.md)이며 아직 수업을 시작하지 않았다.
+- 현재 원문: [Testing & Debugging README](../../03-GettingStarted/08-testing/README.md), 핵심 실습 완료(2026-10-05).07 Foundry Toolkit은 선택으로 남기고 건너뛰었다.
 - 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
-- 다음 행동: 학습자 요청 시08 문서 검토·계획을 준비한다. 07은 선택 보류이며06은 2026-10-05 종료했다. 선택 hosted 연결·실제 구형 migration은 미실습이다.
+- 다음 행동: 학습자가 다음 단원을 지정하면 해당 README를 검토한다. 테스트 접근 선택은 부분 이해로 이어가며 실제 HTTP 진단 도구 선택은 다음 관련 실습에서 재확인한다.
 
 ## 첫 서버 단원
 
@@ -69,6 +69,15 @@
 - 최신 공식 문서는 local prompt의 외부 모델·local MCP와 NIM/Custom BYOM을 지원하므로 GPT-5.1 Foundry 배포는 이 목표의 필수조건이 아니다. 사용 중인 DeepSeek 모델의 Toolkit Tool Calling·SDK2.2/2026-07-28 상호운용은 실제 확인이 필요하다. README UI 경로는 최신 문서와 다르고 FastMCP 예제를 현재 MCPServer 환경에 맞춰야 하며 F5는 생성 프로젝트 launch 설정을 확인해야 한다.
 - 진행한다면 모델 연결→기존 서버·도구 선택과 지침 설정→multiply 결과를 subtract에 전달하는 의존 호출 검증→새 Tool 추가·발견 확인으로 축약한다. 설치·Azure 생성·API 실행은 하지 않았다.
 
+## Testing & Debugging 단원
+
+- 핵심 실습 완료: 2026-10-05. 별도08 .venv(Python3.12.10·MCP2.2.0·pytest9.1.1), practice/server.py·divide_request.json, tests/test_calculator.py·test_mcp_server.py. 단원 완료와 모든 개념의 독립 이해는 구분한다.
+- 실행: Inspector 세 divide 사례 일치 보고, pytest 단위 세 PASSED→임시 // 오류 실패→/ 복구 후 통과, AnyIO/asyncio의 Client(server) 통합 네 PASSED, curl.exe의 실제 /mcp 호출 HTTP200·isError:false·result2.5를 확인했다. 학습자가 add 단위 테스트를 추가해 전체 여덟 PASSED를 제출했다.
+- 확인: 실제2·기대2.5 실패 보고, 기대와 다른 예외의 테스트 실패, 도구 등록 decorator만 제거할 때 단위 통과·목록 검사 실패를 설명했다. 계산 전 ToolError 분기와 실제 ZeroDivisionError 이름은 보충했다. 최신 평가 근거는 Python Client 기록에 둔다.
+- 원문 교정: 표준 /mcp POST·현재 버전/메서드/이름 헤더·본문 메타데이터, MCPServer/Client public API·AnyIO asyncio backend로 교정했다. in-process 통합을 실제 HTTP/stdio 검사로 일반화하지 않는다. 이전 CLI 경험으로 중복 호출을 생략했고 버그 재현·회귀 검사를 보충했다. cursor 예제는 SDK 참고로 두었다.
+- 한계: 단위 방식 선택 이유는 별도 근거 없이 선택했다고 답했다. HTTP 실패 사례의 검사 범위 한계·실제 실행 방향은 맞게 설명했으나 도구 선택은 몰라 curl.exe/Inspector HTTP 진단을 보충했다. 접근 선택은 부분 이해, raw 요청 독립 구성·실제 HTTP 실패 진단은 미평가이다. 유한 테스트의 보장 범위·전수 검사 예시는 보충만 했고 실행/독립 설명은 미확인이다.
+- [상세 이력](history/03-testing-2026-10-05.md)은 초기 계획·순서 변경·실패 분석·보충 경위를 확인할 때만 읽는다. 2026-10-05 완료 시 누적 기록을 이동하고 요약·부모 INDEX를 갱신했으며 이동만으로 이해 상태를 바꾸지 않았다.
+
 ## 평가 한계와 원문 교정
 
 - 안내된 예제·입력을 따른 실습과 독립 적용을 구분한다. 과제 입력·이름은 기존 예제와 같고 예외 범위는 보완 후 확인했다. 모든 개념·운영 능력을 확인한 것은 아니다.
@@ -87,6 +96,7 @@
 - 2026-10-05: VS Code 완료 시 상세 실패·교정 기록을 history로 보존하고 현재 설정·실행 근거·한계를 재개 요약으로 정리했다. 파일 이동만으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: stdio Server 완료 시 누적 실습·SDK 출력 보호·HTTP403 교정 경위를 history로 보존하고 모듈을 재개 요약으로 정리했다. 이동으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: HTTP Streaming 마무리 시 누적 계획·관찰·CORS 보충을 history로 보존하고 환경·핵심 실행·과제·보안·한계를 요약했다. 상위 history INDEX를 갱신했으며 이동만으로 평가를 바꾸지 않았다.
+
 
 
 

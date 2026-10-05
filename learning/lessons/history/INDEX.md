@@ -13,5 +13,6 @@
 | [VS Code 실습 — 2026-10-05](03-vscode-2026-10-05.md) | 설정 호환·Chat runtime 시작 오류·UI 출력 한계·서버 파일 로그 검증 경위 |
 | [stdio Server 실습 — 2026-10-05](03-stdio-server-2026-10-05.md) | CLI 입력 오류·출력 보호의 SDK 교정·VS Code 연결·외부 API HTTP403 진단 경위 |
 | [HTTP Streaming 실습 — 2026-10-05](03-http-streaming-2026-10-05.md) | 일반 HTTP 비교·MCP 진행 알림·가변 길이 목록 과제·CORS 보충 경위 |
+| [Testing & Debugging 실습 — 2026-10-05](03-testing-2026-10-05.md) | pytest 단위·통합·버그 재현·HTTP 호출과 검사 범위·보장 한계·접근 선택 보충 경위 |
 
 기존 기록을 보존하기 위해 이동했다. 이후 모든 문답을 이 형식으로 누적하는 규칙은 아니다.
