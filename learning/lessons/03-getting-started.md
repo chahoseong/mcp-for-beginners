@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [Testing & Debugging README](../../03-GettingStarted/08-testing/README.md), 핵심 실습 완료(2026-10-05).07 Foundry Toolkit은 선택으로 남기고 건너뛰었다.
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
-- 다음 행동: 학습자가 다음 단원을 지정하면 해당 README를 검토한다. 테스트 접근 선택은 부분 이해로 이어가며 실제 HTTP 진단 도구 선택은 다음 관련 실습에서 재확인한다.
+- 현재 원문: [Deployment README](../../03-GettingStarted/09-deployment/README.md), 핵심 학습·실습 완료(2026-10-05).07 Foundry Toolkit은 선택 보류이다.
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
+- 다음 행동: 배포 핵심 실습과 원격 갱신 점검 답변을 확인했다. 로컬 컨테이너 정리 방법을 안내하고 다음 단원은 학습자 요청에 따라 진행한다.
 
 ## 첫 서버 단원
 
@@ -78,6 +78,15 @@
 - 한계: 단위 방식 선택 이유는 별도 근거 없이 선택했다고 답했다. HTTP 실패 사례의 검사 범위 한계·실제 실행 방향은 맞게 설명했으나 도구 선택은 몰라 curl.exe/Inspector HTTP 진단을 보충했다. 접근 선택은 부분 이해, raw 요청 독립 구성·실제 HTTP 실패 진단은 미평가이다. 유한 테스트의 보장 범위·전수 검사 예시는 보충만 했고 실행/독립 설명은 미확인이다.
 - [상세 이력](history/03-testing-2026-10-05.md)은 초기 계획·순서 변경·실패 분석·보충 경위를 확인할 때만 읽는다. 2026-10-05 완료 시 누적 기록을 이동하고 요약·부모 INDEX를 갱신했으며 이동만으로 이해 상태를 바꾸지 않았다.
 
+## Deployment 단원
+
+- 핵심 학습·실습 완료: 2026-10-05. 요구사항별 로컬/클라우드 선택, 별도09 practice의 Python 서버 패키징, 로컬 Docker 배포·갱신과 Render 원격 배포를 수행했다. Azure는 비교만 하고 실습 대상은 Render로 변경했다.
+- 환경·구현: Docker Engine29.8.0·Linux Engine, Python3.12-slim·MCP2.2.0, Dockerfile·requirements.txt·.dockerignore. HTTP 서버는0.0.0.0에 bind하며 PORT 환경변수(기본8000)를 읽는다. 로컬 publish는127.0.0.1:8080→8000이다.
+- 실행 근거: v1 이미지/컨테이너·시작 로그·정상2.5와 0 분모 오류 응답, v2 재빌드/컨테이너 교체 뒤 deployment-practice-v2 이름을 확인했다. Render /mcp의 목록은 에이전트가 확인했고 정상/오류 호출은 학습자가 제출했다. 두 호출 모두 HTTP200이며 isError로 도구 성공/실패를 구분한다.
+- 이해 근거: COPY가 build 시점 파일을 복사하므로 호스트 수정 후 기존 컨테이너 restart만으로 반영되지 않음을 설명했다. 로컬에만 새 도구가 발견되는 다른 사례에서 GitHub 업로드 확인·Render 재배포를 제안했다. 최신 평가와 한계는 [Deployment](../understanding/deployment.md)에 둔다.
+- 교정·한계: 구형SSE·PowerShell 환경변수·개발용 실행을 현재 Streamable HTTP와 배포 실행으로 보완했다. Render 무료 서비스의 유휴 중지와 재기동을 설명했다. 안내된 실행과 독립 운영 설계를 구분하며 고가용성·인증 구현·실제 원격 갱신 실패 복구는 미평가이다. 로컬 정리 실행은 미확인이고 Render 삭제는 요청하지 않았다.
+- [상세 이력](history/03-deployment-2026-10-05.md)에 누적 계획·환경·배포 검증 근거를 보존했다. 2026-10-05 요약과 부모 INDEX를 정리했으며 이동 자체로 평가를 변경하지 않았다.
+
 ## 평가 한계와 원문 교정
 
 - 안내된 예제·입력을 따른 실습과 독립 적용을 구분한다. 과제 입력·이름은 기존 예제와 같고 예외 범위는 보완 후 확인했다. 모든 개념·운영 능력을 확인한 것은 아니다.
@@ -96,6 +105,7 @@
 - 2026-10-05: VS Code 완료 시 상세 실패·교정 기록을 history로 보존하고 현재 설정·실행 근거·한계를 재개 요약으로 정리했다. 파일 이동만으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: stdio Server 완료 시 누적 실습·SDK 출력 보호·HTTP403 교정 경위를 history로 보존하고 모듈을 재개 요약으로 정리했다. 이동으로 이해 평가를 변경하지 않았다.
 - 2026-10-05: HTTP Streaming 마무리 시 누적 계획·관찰·CORS 보충을 history로 보존하고 환경·핵심 실행·과제·보안·한계를 요약했다. 상위 history INDEX를 갱신했으며 이동만으로 평가를 바꾸지 않았다.
+
 
 
 
