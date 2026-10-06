@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [MCP Inspector README](../../03-GettingStarted/13-mcp-inspector/README.md), 보충 수업 완료(2026-10-06).07 Foundry Toolkit·12 MCP Hosts는 선택 보류이다.
+- 현재 원문: [Sampling README](../../03-GettingStarted/14-sampling/README.md), 개념·설계 비교 수업 완료(2026-10-06).07 Foundry Toolkit·12 MCP Hosts는 선택 보류이다.
 - 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05), 10-advanced·11-simple-auth와13-mcp-inspector 보충(2026-10-06)의 Python 학습·실습.07·12는 선택 보류이며 모든 개념의 독립 이해를 뜻하지 않는다.
-- 다음 행동: 학습자의 질문 또는 다음 단원 요청을 기다린다. 미평가 항목은 이해 기록에서 이어간다. reader 복원·서버 중지 출력은 미확인이다.
+- 다음 행동: 학습자의 질문 또는15-mcp-apps 검토 요청을 기다린다.14는 개념/설계 범위를 완료하고 레거시/직접 API 구현은 선택 확장으로 남겼다. Module03 전체 완료로 표시하지 않는다. 미평가 항목은 이해 기록에서 이어간다. reader 복원·서버 중지 출력은 미확인이다.
 
 ## 첫 서버 단원
 
@@ -120,6 +120,15 @@
 - 진단 근거: 가상 save_note 오류에서 저장 공간·오류 문구를 조사 대상/근거로 선택했다. 마지막 가상 로그는 조사 목적 보충 후 multiply의 기대32와 실제31 불일치를 짚었다. 최신 이해·한계는 [Python Client](../understanding/python-client.md)에 둔다.
 - 범위·한계: Node 요구조건·현행 전송/수명주기·알림의 응답 부재·SDK 오류 처리 예시를 교정했다. Inspector HTTP 인증 연결·새 알림 실행·내보내기·VS Code 자동 실행은 선택이며 미실습이다. 실제 장애 복구·모든 오류 계층의 독립 분류는 미평가이다. 하단 Resource templates 오류와 종료 실행은 미확인이다.
 - [상세 이력](history/03-inspector-2026-10-06.md)에 계획·UI 교정·실패 비교를 보존했다. 2026-10-06 완료 시 요약·history INDEX를 갱신했으며 이동만으로 평가를 변경하지 않았다.
+
+## Sampling 단원
+
+- 개념·설계 비교 수업 완료: 2026-10-06. 현행 명세의 deprecated 상태에 따라 원문 레거시 설정/실행은 선택 확장으로 두었다. 새 코드·가상환경·유료 API 실행은 없다.
+- 다룬 범위: Sampling의 Server 생성 요청·Host/Client 모델 제어·중간 결과와 최종 Tool 결과, 지원 선언/모델 선호/maxTokens 의미, Server 직접 LLM API 호출과 모델·키·데이터·실패·비용 책임을 그림으로 비교했다.
+- 이해 근거: 가격 조회 후 Host의 구매 조언은 Server 생성 요청이 없어 Sampling이 아니라고 설명했다. 상품 설명 직접 API 과제에서 Client→Server→NIM·Server→Client 흐름과 Server의 연결 설정/키 관리를 작성했다. NIM→Server 응답 단계는 교사가 보충했다. 최신 상태·한계는 [Client Primitives](../understanding/client-primitives.md)에 둔다.
+- 교정: deprecated는 즉시 사용 불가가 아니며 제거 가능 시점과 확정일을 구분했다. 구형 초기화/ctx.session 코드와 현행 요청별 capability·InputRequiredResult 호환 절차를 구분하고 post.title을 id로 반환하는 오류를 확인했다. 원문 자체는 수정하지 않았다.
+- 한계·다음: 원문의 Sampling 설정·실행 목표는 개요만 다뤘으며 완료로 일반화하지 않는다. NIM 실제 Server 호출·실패/비용/데이터 정책 설계·전체 독립 구현은 미평가이다.15-mcp-apps가 남아 있다.
+- [상세 이력](history/03-sampling-2026-10-06.md)에 검토·계획·보충 경위를 보존했다.2026-10-06 완료 시 요약·history INDEX를 갱신했으며 이동만으로 평가는 바꾸지 않았다.
 
 ## 평가 한계와 원문 교정
 
