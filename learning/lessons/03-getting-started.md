@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [Deployment README](../../03-GettingStarted/09-deployment/README.md), 핵심 학습·실습 완료(2026-10-05).07 Foundry Toolkit은 선택 보류이다.
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
-- 다음 행동: 배포 핵심 실습과 원격 갱신 점검 답변을 확인했다. 로컬 컨테이너 정리 방법을 안내하고 다음 단원은 학습자 요청에 따라 진행한다.
+- 현재 원문: [Advanced server usage README](../../03-GettingStarted/10-advanced/README.md), 핵심 학습·실습 완료(2026-10-06).07 Foundry Toolkit은 선택 보류이다.
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05), 10-advanced(2026-10-06)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
+- 다음 행동: Advanced 핵심 학습을 마쳤다. 다음 단원은 학습자가 요청하면 README를 읽고 계획한다. 미평가 항목은 이해 기록에서 이어간다.
 
 ## 첫 서버 단원
 
@@ -86,6 +86,15 @@
 - 이해 근거: COPY가 build 시점 파일을 복사하므로 호스트 수정 후 기존 컨테이너 restart만으로 반영되지 않음을 설명했다. 로컬에만 새 도구가 발견되는 다른 사례에서 GitHub 업로드 확인·Render 재배포를 제안했다. 최신 평가와 한계는 [Deployment](../understanding/deployment.md)에 둔다.
 - 교정·한계: 구형SSE·PowerShell 환경변수·개발용 실행을 현재 Streamable HTTP와 배포 실행으로 보완했다. Render 무료 서비스의 유휴 중지와 재기동을 설명했다. 안내된 실행과 독립 운영 설계를 구분하며 고가용성·인증 구현·실제 원격 갱신 실패 복구는 미평가이다. 로컬 정리 실행은 미확인이고 Render 삭제는 요청하지 않았다.
 - [상세 이력](history/03-deployment-2026-10-05.md)에 누적 계획·환경·배포 검증 근거를 보존했다. 2026-10-05 요약과 부모 INDEX를 정리했으며 이동 자체로 평가를 변경하지 않았다.
+
+## Advanced server usage 단원
+
+- 핵심 학습·실습 완료: 2026-10-06. 별도10 .venv(Python3.12·MCP2.2.0·Pydantic2.13.5), practice/server.py·client.py와 tools/resources/prompts의 기능 파일·registry를 사용한다.
+- 실행: 직접 Python 검증/계산8.0 후 실제 stdio 목록·add8.0을 확인했다. 필수 a 누락·숫자 문자열은 is_error:True 결과, 미등록 도구는 MCPError(-32602)를 확인했다. 학습자가 multiply 함수·정의·registry를 작성해 목록·곱셈10.0을 제출했다.
+- 확장: guide://calculator Resource 목록·안내 본문, explain_calculation Prompt 목록·required expression·user 메시지를 실행했다. 안내된 구현이며 Prompt 메시지는 LLM 생성 응답이 아니다.
+- 이해: 목록/registry 불일치와 strict 제거 시 필수성 유지·기본 변환을 설명했다. 다른 입력 모델의 공통 분기 근거는 집중 후속 질문으로 코드 위치를 짚었다. 일반 함수20개·파일 분리 사례에서 MCPServer가 충분하다는 선택 이유를 설명했다. 최신 상태·답변 한계는 [Tools, Resources, Prompts](../understanding/tools-resources-prompts.md)에 둔다.
+- 교정: FastMCP/low-level decorator·camelCase·잘못된 required query·손실 있는 schema 변환을 현재 MCPServer/Server(on_*)·snake_case·model_json_schema로 교정했다. 검증/응답을 직접 구성하고 high-level도 파일 분리 가능함을 보충했다. 원문 파일은 수정하지 않았다.
+- 한계: 계산 본문의 예상 업무 오류 처리와 실제 실패 재현은 보충 설명만 했다. 서로 다른 입력 모델의 실제 도구 구현·Resource/Prompt 오류 실행·전체 독립 구조 설계는 미평가이다. [상세 이력](history/03-advanced-2026-10-06.md)에 누적 계획·코드 확인·평가 근거를 보존했다. 2026-10-06 구조 정리로 기존 상태를 바꾸지 않았다.
 
 ## 평가 한계와 원문 교정
 
