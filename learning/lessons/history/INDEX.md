@@ -17,5 +17,6 @@
 | [Deployment 실습 — 2026-10-05](03-deployment-2026-10-05.md) | 로컬 Docker 패키징·갱신·Render 선택과 실제 원격 검증의 상세 근거 |
 | [Advanced server usage — 2026-10-06](03-advanced-2026-10-06.md) | low-level migration·검증·도구 확장·Resource/Prompt 실행·선택 기준과 평가 한계 |
 | [Simple Auth — 2026-10-06](03-simple-auth-2026-10-06.md) | Bearer/JWT 실제 HTTP·변조/만료/issuer/audience 거부·역할별 권한·검사 순서 진단과 교정 근거 |
+| [MCP Inspector — 2026-10-06](03-inspector-2026-10-06.md) | 단원 검토·그림 우선 계획·UI 요청 표시 교정·CLI 실패 비교·Resource/Prompt 결과·진단 확인 |
 
 기존 기록을 보존하기 위해 이동했다. 이후 모든 문답을 이 형식으로 누적하는 규칙은 아니다.

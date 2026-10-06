@@ -1,7 +1,7 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [Simple Auth README](../../03-GettingStarted/11-simple-auth/README.md), 핵심 학습·실습 완료(2026-10-06).07 Foundry Toolkit은 선택 보류이다.
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05), 10-advanced·11-simple-auth(2026-10-06)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
+- 현재 원문: [MCP Inspector README](../../03-GettingStarted/13-mcp-inspector/README.md), 보충 수업 완료(2026-10-06).07 Foundry Toolkit·12 MCP Hosts는 선택 보류이다.
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05), 10-advanced·11-simple-auth와13-mcp-inspector 보충(2026-10-06)의 Python 학습·실습.07·12는 선택 보류이며 모든 개념의 독립 이해를 뜻하지 않는다.
 - 다음 행동: 학습자의 질문 또는 다음 단원 요청을 기다린다. 미평가 항목은 이해 기록에서 이어간다. reader 복원·서버 중지 출력은 미확인이다.
 
 ## 첫 서버 단원
@@ -111,6 +111,15 @@
 - 2026-10-06 README를 읽고 여러 Host 등록·전송 방식·문제 진단·보안 안내가 기존04 VS Code 실습과 상당히 중복됨을 검토했다. 별도 명시된 학습 목표 절은 없으며 여러 제품의 설정 안내가 중심이다.
 - 선택 보류 확정(2026-10-06): 학습자가 이번 단원을 학습하지 않고 넘어가기로 했다. 단원 이수로 표시하지 않는다. 실제 사용할 다른 Host가 생기면 기존 Python 서버 하나로 등록·호출·로그 확인을 실습한다. 다음 학습 위치는13-mcp-inspector이다.
 - 최신 공식 문서와 비교해 Claude 원격 지원 불가 표·VS Code 사용자 설정/도구 선택·Cline 설치/설정·Windsurf 계열 설정 안내를 그대로 따라서는 안 됨을 안내한다. Streamable HTTP와 구형 HTTP+SSE를 구분하며 Host 내부 Client 역할을 유지한다. 원문 파일 자체는 수정하지 않았다.
+
+## MCP Inspector 단원
+
+- 보충 수업 완료: 2026-10-06. 기존10 practice/server.py·.venv·Inspector2.9.0을 stdio로 재사용했다. 그림→실제 화면→메시지/서버 코드 순서이며 새 서버나 가상환경은 만들지 않았다.
+- 실행 근거: add/multiply 목록·multiply(6,4)=24, CLI의 add(b=3) 검증 실패/isError:true·tool_is_error 안내, guide://missing 오류 안내를 제출했다. guide Resource의 contents와 explain_calculation(6 * 4)의 user 메시지도 UI에서 확인했다.
+- 교정: Protocol 카드의 Parameters는 params이며 요청 전체 JSON/최상위 id가 아니다. progressToken과 id는 역할이 다르다. CLI 문자열 code:"error"는 JSON-RPC 숫자 코드가 아니며 서버의 INVALID_PARAMS 분기를 확인해-32602를 설명했다. 원본 wire 오류 응답을 직접 본 것으로 일반화하지 않는다.
+- 진단 근거: 가상 save_note 오류에서 저장 공간·오류 문구를 조사 대상/근거로 선택했다. 마지막 가상 로그는 조사 목적 보충 후 multiply의 기대32와 실제31 불일치를 짚었다. 최신 이해·한계는 [Python Client](../understanding/python-client.md)에 둔다.
+- 범위·한계: Node 요구조건·현행 전송/수명주기·알림의 응답 부재·SDK 오류 처리 예시를 교정했다. Inspector HTTP 인증 연결·새 알림 실행·내보내기·VS Code 자동 실행은 선택이며 미실습이다. 실제 장애 복구·모든 오류 계층의 독립 분류는 미평가이다. 하단 Resource templates 오류와 종료 실행은 미확인이다.
+- [상세 이력](history/03-inspector-2026-10-06.md)에 계획·UI 교정·실패 비교를 보존했다. 2026-10-06 완료 시 요약·history INDEX를 갱신했으며 이동만으로 평가를 변경하지 않았다.
 
 ## 평가 한계와 원문 교정
 
