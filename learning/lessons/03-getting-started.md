@@ -1,8 +1,8 @@
 # Module 03 — Getting Started 수업 요약
 
-- 현재 원문: [Advanced server usage README](../../03-GettingStarted/10-advanced/README.md), 핵심 학습·실습 완료(2026-10-06).07 Foundry Toolkit은 선택 보류이다.
-- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05), 10-advanced(2026-10-06)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
-- 다음 행동: Advanced 핵심 학습을 마쳤다. 다음 단원은 학습자가 요청하면 README를 읽고 계획한다. 미평가 항목은 이해 기록에서 이어간다.
+- 현재 원문: [Simple Auth README](../../03-GettingStarted/11-simple-auth/README.md), 핵심 학습·실습 완료(2026-10-06).07 Foundry Toolkit은 선택 보류이다.
+- 완료 범위: 01-first-server(2026-10-02), 02-client·03-llm-client(2026-10-04), 04-vscode·05-stdio-server·06-http-streaming·08-testing·09-deployment(2026-10-05), 10-advanced·11-simple-auth(2026-10-06)의 Python 핵심 학습·실습. Module 03 전체 완료나 모든 개념의 독립 이해를 뜻하지 않는다.
+- 다음 행동: 학습자의 질문 또는 다음 단원 요청을 기다린다. 미평가 항목은 이해 기록에서 이어간다. reader 복원·서버 중지 출력은 미확인이다.
 
 ## 첫 서버 단원
 
@@ -95,6 +95,16 @@
 - 이해: 목록/registry 불일치와 strict 제거 시 필수성 유지·기본 변환을 설명했다. 다른 입력 모델의 공통 분기 근거는 집중 후속 질문으로 코드 위치를 짚었다. 일반 함수20개·파일 분리 사례에서 MCPServer가 충분하다는 선택 이유를 설명했다. 최신 상태·답변 한계는 [Tools, Resources, Prompts](../understanding/tools-resources-prompts.md)에 둔다.
 - 교정: FastMCP/low-level decorator·camelCase·잘못된 required query·손실 있는 schema 변환을 현재 MCPServer/Server(on_*)·snake_case·model_json_schema로 교정했다. 검증/응답을 직접 구성하고 high-level도 파일 분리 가능함을 보충했다. 원문 파일은 수정하지 않았다.
 - 한계: 계산 본문의 예상 업무 오류 처리와 실제 실패 재현은 보충 설명만 했다. 서로 다른 입력 모델의 실제 도구 구현·Resource/Prompt 오류 실행·전체 독립 구조 설계는 미평가이다. [상세 이력](history/03-advanced-2026-10-06.md)에 누적 계획·코드 확인·평가 근거를 보존했다. 2026-10-06 구조 정리로 기존 상태를 바꾸지 않았다.
+
+## Simple Auth 단원
+
+- 핵심 학습·실습 완료: 2026-10-06. 별도11 .venv(Python3.12.10·MCP2.2.0·PyJWT2.15.1), practice/server.py·client.py·sdk_client.py·issue_token.py를 사용한다. 서명 키는 practice/.env, Client 토큰은 단원 루트 .env이며 키/JWT 자체를 제출하지 않았다.
+- 실제 HTTP: 토큰 없음/무효401·정상200·도구 결과와 실행 로그, SDK Client 목록/get_time을 확인했다. JWT sub 변조는 InvalidSignatureError, 같은 키로 서명한 만료/다른 issuer/audience는 각각 ExpiredSignatureError/InvalidIssuerError/InvalidAudienceError·401·도구 미실행을 확인했다.
+- RBAC: 검증된 role을 reader/admin/operator scope 정책으로 매핑하고 HTTP 필수 mcp:access·도구별 get_access_token/require_scope를 구현했다. reader 조회만·admin 두 도구·operator 메시지 변경만 실행됐다. visitor는 기본 빈 scope로 JWT 검증 성공 뒤 HTTP403을 받았다. 도구 내부 거부는 ToolError/is_error:true/HTTP200이며 목록이 실행 권한을 뜻하지 않음을 보충했다.
+- 이해 근거: 만료/변조의 exp/signature 검사 구분, 새 operator 최소 scope 선택, 권한 검사 전 상태 변경의 가상 오류 원인·수정 순서를 설명했다. 안내된 실행과 독립 설계/구현은 구분하며 issuer/audience의 독립 검사 이유는 아직 미확인이다. 최신 상태는 [인증·접근 통제](../understanding/security/authentication-and-access.md)에 둔다.
+- 교정·보충: Bearer/Basic 명칭·무효 토큰403→401·구형 SDK/문법/토큰 불일치/예제 링크를 교정해 안내했다. SDK TokenVerifier/AuthSettings·고정 HS256·필수 claim/issuer/audience·UTC·키/토큰 분리를 적용했다. 원문 파일 자체는 수정하지 않았다. 그림·표를 먼저 검토하고 코드가 더 명확한 부분은 코드로 설명했다.
+- 표준 흐름 보충 완료(2026-10-06): 발견→로그인/동의·Code/PKCE→토큰으로 MCP 요청을 번호 그림으로 설명했다. 공개 Protected Resource Metadata와 발급 서버 메타데이터, 브라우저 응답과 Client 콜백·직접 토큰 교환을 구분했다. OAuth 인가/OIDC 인증·다른 grant 개요·JWT/Opaque Token·자체 정의 scope를 보충했다. auth.example.com은 자리표시자이며 실제 OAuth 획득/갱신·운영 인증 배포는 미실습이다. 이해 자기 보고와 확인성 질문만으로 독립 이해 상태를 올리지 않는다.
+- 종료 상태: reader 재발급 복원·서버 Ctrl+C 중지를 안내했으나 실행 출력은 미확인이다. [상세 이력](history/03-simple-auth-2026-10-06.md)에 누적 계획·실패 비교·교정 근거를 보존했다. 2026-10-06 요약·history INDEX를 갱신했으며 기록 이동만으로 평가를 변경하지 않았다.
 
 ## 평가 한계와 원문 교정
 
