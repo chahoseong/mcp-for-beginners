@@ -6,6 +6,8 @@
 | --- | --- |
 | [Module 00 — 2026-10-01](00-introduction-2026-10-01.md) | 입문 학습 당시의 답변·설계·보충 설명 |
 | [Module 01 — 2026-10-01](01-core-concepts-2026-10-01.md) | 구조 개편 전 누적된 학습·교정 이력 |
+| [Module 01 마무리 — 2026-10-02](01-core-concepts-2026-10-02.md) | 도구 설계·Tasks·요청 제한·감사 범위의 변화와 수업 방식 교정 |
+| [Module 02 완료 — 2026-10-02](02-security-completion-2026-10-02.md) | 마지막 평가·설명 맥락 교정·보안 제품/실습 범위 결정 |
 | [Security 평가 — 2026-10-02](02-security-assessments-2026-10-02.md) | 보안 기록 분리 전 평가·교정 근거와 마지막 평가·구조 변경 |
 | [첫 서버 실습 — 2026-10-02](03-first-server-2026-10-02.md) | 단원 정리 전 실습 결과, 입력 누락과 질문 맥락 보완 경위 |
 | [Client 실습 — 2026-10-04](03-client-2026-10-04.md) | 단원 정리 전 migration·조회·오류 실습과 과제 보완 경위 |
@@ -20,5 +22,7 @@
 | [MCP Inspector — 2026-10-06](03-inspector-2026-10-06.md) | 단원 검토·그림 우선 계획·UI 요청 표시 교정·CLI 실패 비교·Resource/Prompt 결과·진단 확인 |
 | [Sampling — 2026-10-06](03-sampling-2026-10-06.md) | deprecated 단원 검토·개념/설계 비교 계획·호출 주체 구분·상품 설명 직접 API 설계 |
 | [MCP Apps — 2026-10-06](03-mcp-apps-2026-10-06.md) | Python/화면 SDK 실습·VS Code 그룹화·최초 결과 중복 진단·FAQ·실패/복구 교정 경위 |
+| [선택 단원 검토](03-optional-units-2026-10-06.md) | 07 Foundry Toolkit·12 MCP Hosts 검토·보류 선택과 당시 재개 권고 |
+| [Module 03 실습 근거 보존](03-implementation-evidence-2026-10-06.md) | Client·LLM·테스트·배포의 단계별 출력, 최종 보완과 안내/실행 주체 |
 
 기존 기록을 보존하기 위해 이동했다. 이후 모든 문답을 이 형식으로 누적하는 규칙은 아니다.
