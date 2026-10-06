@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>화면 기초 실습</title>
+</head>
+<body>
+  <input id="faq-query" placeholder="조회할 항목">
+  <button id="get-faq-btn">조회</button>
+  <p id="faq-response">아직 조회하지 않았습니다.</p>
+
+  <script>
+    const queryInput = document.getElementById("faq-query");
+    const queryButton = document.getElementById("get-faq-btn");
+    const responseArea = document.getElementById("faq-response");
+
+    queryButton.addEventListener("click", () => {
+      const query = queryInput.value;
+      responseArea.textContent = `입력한 항목: ${query}`;
+    });
+  </script>
+</body>
+</html>

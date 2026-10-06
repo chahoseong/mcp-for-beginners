@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>서버 시간</title>
+</head>
+<body>
+  <h1>서버 시간</h1>
+  <p id="server-time" aria-live="polite">결과를 기다리는 중입니다.</p>
+  <button id="refresh-btn" disabled>시간 새로고침</button>
+
+  <h2>FAQ 조회</h2>
+  <label for="faq-query">항목</label>
+  <input id="faq-query" type="text" value="shipping">
+  <button id="faq-btn" disabled>조회</button>
+  <p id="faq-response" aria-live="polite">조회할 항목을 입력해주세요.</p>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
