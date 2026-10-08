@@ -2,8 +2,17 @@
 
 import pytest
 from mcp import Client
+from mcp.client import Transport
 from mcp.shared.exceptions import MCPError
-from mcp_types import INVALID_PARAMS
+from mcp.shared.message import SessionMessage
+from mcp_types import (
+    CLIENT_CAPABILITIES_META_KEY,
+    INVALID_PARAMS,
+    PROTOCOL_VERSION_META_KEY,
+    JSONRPCError,
+    JSONRPCRequest,
+    JSONRPCResponse,
+)
 
 
 pytestmark = pytest.mark.anyio
@@ -112,6 +121,67 @@ async def test_should_return_prompt_error_when_required_argument_is_missing(
     )
     assert len(result.messages) == 1
     assert result.messages[0].role == "user"
+
+
+@pytest.mark.parametrize(
+    ("name", "arguments"),
+    [
+        pytest.param("missing_prompt", {}, id="unknown-prompt"),
+        pytest.param("prepare_quote", {}, id="missing-arguments"),
+        pytest.param(
+            "prepare_quote",
+            {"category": "smartphones", "quantity": "3", "budget": "2000.00",
+             "typo": "x"},
+            id="unknown-argument",
+        ),
+    ],
+)
+async def test_should_reject_request_format_when_prompt_metadata_is_invalid(
+    mcp_transport: Transport, name: str, arguments: dict[str, str],
+) -> None:
+    """
+    Given: 잘못된 capabilities 형식과 Prompt 이름 또는 인자 오류가 함께 있는 요청.
+    When: SDK stdio transport로 원본 요청을 서버에 보낸다.
+    Then: middleware가 SDK 형식 오류를 가리지 않으며 이후 정상 요청도 성공한다.
+    """
+    # Client의 자동 metadata 설정을 거치지 않고 잘못된 원본 형식을 전송한다.
+    async with mcp_transport as (read_stream, write_stream):
+        await write_stream.send(SessionMessage(JSONRPCRequest(
+            jsonrpc="2.0", id=1, method="prompts/get",
+            params={
+                "name": name, "arguments": arguments,
+                "_meta": {
+                    PROTOCOL_VERSION_META_KEY: "2026-07-28",
+                    CLIENT_CAPABILITIES_META_KEY: [],
+                },
+            },
+        )))
+        response = await read_stream.receive()
+        assert isinstance(response, SessionMessage)
+        assert isinstance(response.message, JSONRPCError)
+        assert response.message.id == 1
+        assert response.message.error.code == INVALID_PARAMS
+        assert response.message.error.message == "Invalid request parameters"
+
+        await write_stream.send(SessionMessage(JSONRPCRequest(
+            jsonrpc="2.0", id=2, method="prompts/get",
+            params={
+                "name": "prepare_quote",
+                "arguments": {"category": "smartphones", "quantity": "3",
+                              "budget": "2000.00"},
+                "_meta": {
+                    PROTOCOL_VERSION_META_KEY: "2026-07-28",
+                    CLIENT_CAPABILITIES_META_KEY: {},
+                },
+            },
+        )))
+        recovered = await read_stream.receive()
+        assert isinstance(recovered, SessionMessage)
+        assert isinstance(recovered.message, JSONRPCResponse)
+        assert recovered.message.id == 2
+        messages = recovered.message.result["messages"]
+        assert len(messages) == 1
+        assert messages[0]["role"] == "user"
 
 
 async def test_should_return_prompt_error_when_prompt_is_unknown(
