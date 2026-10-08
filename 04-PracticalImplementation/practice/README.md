@@ -8,6 +8,33 @@
 전체 견적을 실행하지 않는다. `search_products`, `calculate_quote`, 자동 재시도와
 배포는 후속 과제의 범위다.
 
+## 구현 판단과 협업 범위
+
+- Tool 입력은 선언된 제약을 SDK의 Pydantic 검증에 맡겨 함수 실행 전에 거절한다. 도구 본문에서 검증을 빠뜨리는 문제를 줄이기 위한 선택이다. Prompt 이름·인자는 middleware, 수량·예산 등의 문자열 값은 Prompt 함수에서 검사한다.
+- 재고 부족은 확인된 조회 결과이고, 조회 실패는 재고를 확인하지 못한 상태다. 실패에는 `ToolError`를 발생시켜 MCP의 오류 표시로 전달한다. 실제 응답 형식과 최초 설계의 차이는 [DESIGN.md](./docs/DESIGN.md)의 과제 2 오류 계약에 정리했다.
+- 정책 원본은 `app/policy.py` 한곳에서 관리한다. Resource가 이 원본으로 안내를 생성하며, 향후 견적 계산도 같은 원본을 참조하도록 설계했다. 정책 변경이 일부 기능에만 반영되는 실수를 방지하기 위해서다.
+
+학습자는 주제·사용자·검색 방식·후보 제시 방향을 승인하고, 작업 단위별로
+구현을 검토했다. 테스트 목적과 분류·이름, 입력 오류 응답, middleware 적용과
+문서 범위에 대해 질문하고 수정 방향을 결정했다. 에이전트는 코드·테스트·실행
+안내를 작성하고 검증·수정을 수행했으며, 서브에이전트는 독립 리뷰를 담당했다.
+이 분담은 대화에서 확인한 결정·검토·작성 활동을 기록한 것이다.
+
+## 대표 요청과 기대 결과
+
+| 요청 | 기대 결과 |
+|---|---|
+| `check_stock(product_id=1, quantity=1)` | 조회 성공. 재고 값과 `in_stock == (stock >= 1)` 확인 |
+| 확인 재고가 S개일 때 수량 S+1 요청 | 조회 성공, `status: "ok"`, `in_stock: false` |
+| `check_stock(product_id=1, quantity=0)` 또는 문자열 수량 | SDK 입력 검증 오류, `is_error: true`, 성공 데이터 없음 |
+| 없는 상품 ID 조회 또는 모의 시간 초과 | `is_error: true`, 오류 텍스트에 `PRODUCT_NOT_FOUND` 또는 `UPSTREAM_TIMEOUT`, 성공 데이터 없음 |
+| `quote://policy` 읽기 | `text/markdown`으로 v1 정책 제공 |
+| `prepare_quote(category="smartphones", quantity="3", budget="2000.00")` | `keyword` 기본값을 적용한 user 메시지 하나 |
+| Prompt 수량 `"3.0"` 또는 필수 인자 누락 | `-32602`와 수정할 인자 안내 |
+
+실제 API의 재고는 조회 시점에 따라 달라진다. 시간 초과 등 반복 가능한
+실패 시나리오는 모의 HTTP 응답으로 확인한다.
+
 ## 환경 준비
 
 Python 3.12와 `uv`가 필요하다. 아래 명령은 PowerShell 기준이다.

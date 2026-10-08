@@ -5,7 +5,8 @@
 - 주제: 고객의 예산과 요청 수량에 맞는 상품 견적 초안 작성
 - 데이터 출처: [DummyJSON 상품 데이터](https://dummyjson.com/docs/products)
 - 데이터 성격: 테스트용 상품 정보이며 실제 판매 가격과 재고를 의미하지 않음
-- 현재 과제 범위: 문제 정의, Tool 3~4개, Resource 1개, Prompt 1개, 전체 작업 흐름과 실패 처리 설계
+- 과제 1 설계 범위: 문제 정의, Tool 3~4개, Resource 1개, Prompt 1개, 전체 작업 흐름과 실패 처리 설계
+- 과제 2 구현 범위: `check_stock`, `quote://policy`, `prepare_quote`와 실제 MCP 요청 검증. 아래 전체 견적 흐름은 후속 구현을 포함한다.
 - 기준 모듈: [Practical Implementation](../../README.md)
 
 ## 1. 해결할 문제
@@ -59,7 +60,10 @@
 - `calculate_quote`의 가격·할인·정책은 서버가 출처에서 확인한 값을 사용한다.
 - 견적 초안의 문장과 표 구성은 Host/모델이 Prompt를 활용해 수행하는 방향으로 설계한다.
 
-### 공통 출력 규칙
+### 공통 출력 규칙 (과제 1 최초 설계)
+
+아래는 최초 설계의 애플리케이션 출력 규칙이다. 과제 2에서 구현한
+`check_stock`의 실패 응답은 뒤의 **과제 2 오류 계약**으로 변경했다.
 
 - 반환 자료형은 `object`이며 성공 시 `status: "ok"`와 아래 도구별 필드를 포함한다.
 - 작업을 수행할 수 없으면 `status: "error"`, `error: {code: string, message: string, retryable: boolean}`을 반환한다.
@@ -76,7 +80,50 @@
 | `INVALID_RESPONSE`     | 필요한 데이터 필드 누락 또는 형식·범위 오류 | 아니오                 |
 | `POLICY_UNAVAILABLE`   | 서버의 견적 정책 누락 또는 오류              | 아니오                 |
 
-모든 외부 API 요청은 10초 후 시간 초과로 처리한다. 재시도 가능한 오류에 한해 1회 재시도하며, 하나의 요청은 최대 2회 시도한다. HTTP 429의 재시도 대기시간이 30초를 초과하면 현재 작업에서는 재시도하지 않고 실패를 보고한다.
+후속 신뢰성 단계에서는 재시도 가능한 오류에 한해 1회 재시도하고, 하나의 요청은 최대 2회 시도하는 것으로 설계했다. HTTP 429의 재시도 대기시간이 30초를 초과하면 재시도하지 않고 실패를 보고한다. 과제 2에서는 HTTPX의 제한 시간을 10초로 설정하고 한 번만 조회하며, 자동 재시도는 구현하지 않는다.
+
+### 과제 2 오류 계약
+
+`check_stock`은 성공 데이터인 `StockResult`를 반환하거나, 실패 시 `ToolError`를
+발생시킨다. 최초 설계의 `{status: "error", error: {...}}` 객체는 반환하지 않는다.
+일반 반환값으로 오류를 표현하면 SDK가 `isError: false`인 결과를 만들 수 있어,
+호출자가 조회 실패를 성공으로 오해할 수 있기 때문이다.
+
+아래는 실제 MCP 응답의 주요 필드다. SDK Client에서는 `isError`와
+`structuredContent`를 각각 `is_error`와 `structured_content`로 읽는다.
+
+| 상황 | MCP 결과 | 오류 내용 |
+|---|---|---|
+| 정상 조회·재고 부족 | `isError: false`, `structuredContent`에 `status: "ok"`와 재고 필드 | 재고 부족은 `in_stock: false`인 정상 조회 결과 |
+| 상품 없음·시간 초과·통신 실패·잘못된 원본 응답 | `isError: true`, 성공 `structuredContent` 없음 | `content`의 텍스트에 앱의 `code`, `message`, `retryable` 정보 포함 |
+| Tool 입력 타입·범위 오류 또는 필수 인자 누락 | `isError: true`, 성공 `structuredContent` 없음 | SDK의 입력 검증 설명. 앱의 오류 JSON 형식이나 `INVALID_INPUT` 코드는 제공하지 않음 |
+
+예를 들어 없는 상품을 조회하면 오류 텍스트는 다음 형식이다.
+`content` 전체나 전체 MCP 메시지가 순수 JSON 오류 객체인 것은 아니다.
+
+```text
+Error executing tool check_stock: {"code": "PRODUCT_NOT_FOUND", "message": "상품 ID 2147483647를 찾을 수 없습니다 (HTTP 404).", "retryable": false}
+```
+
+조회 단계에서 사용하는 앱 오류 코드는 `PRODUCT_NOT_FOUND`, `UPSTREAM_TIMEOUT`,
+`UPSTREAM_UNAVAILABLE`, `INVALID_RESPONSE`다. `retryable: true`는 재시도 가능성
+정보이며, 이번 구현에서 자동으로 재시도했다는 뜻은 아니다.
+위 최초 설계의 `POLICY_UNAVAILABLE`은 후속 견적 계산의 오류로 남아 있다.
+
+Tool 입력은 `Annotated`의 `Field(strict=True, ge=1)` 제약을 SDK의 Pydantic 검증에
+맡긴다. 문자열 `"3"`을 정수로 바꾸어 받지 않으며, 잘못된 입력은 함수 실행과
+HTTP 조회 전에 거절한다. 선언한 제약을 일관되게 적용하여 도구 본문에서
+입력 검증을 빠뜨리는 문제를 줄이기 위해 이 위치를 선택했다.
+
+재고 부족은 재고를 확인해 얻은 결과이고, 조회 실패는 재고를 확인하지 못한
+상태다. 두 상황을 구분하여 호출자가 확인되지 않은 상품을 재고 부족으로
+잘못 판단하지 않도록 한다. 원본 응답에 필수 필드인 `stock`이 없어도
+`INVALID_RESPONSE`의 `ToolError`를 발생시킨다.
+
+Prompt의 이름·필수 인자·추가 인자는 middleware에서, 카테고리·수량·예산 문자열의
+값은 `prepare_quote`에서 검사한다. Prompt 입력 오류는 `MCPError`의 `-32602`와
+수정 안내로 전달되며, Tool의 `isError` 결과와는 응답 형태가 다르다.
+요청 자체의 형식 검증과 오류 처리는 SDK에 맡긴다.
 
 ### `search_products`
 
