@@ -1,0 +1,12 @@
+{
+  "name": "product-quote-mcp-practice-inspector",
+  "version": "0.1.0",
+  "private": true,
+  "description": "상품 견적 MCP 실습의 독립된 Inspector 검증 환경",
+  "scripts": {
+    "inspector": "mcp-inspector"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/inspector": "2.10.0"
+  }
+}
