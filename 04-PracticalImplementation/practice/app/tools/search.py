@@ -20,7 +20,7 @@ NonNegativeInteger = Annotated[int, Field(strict=True, ge=0)]
 NonEmptyString = Annotated[str, StringConstraints(strict=True, min_length=1)]
 StrictString = Annotated[str, StringConstraints(strict=True)]
 PRODUCT_API_URL = "https://dummyjson.com/products"
-PAGE_SIZE = 10
+PAGE_SIZE = 20
 HTTP_TIMEOUT_SECONDS = 10.0
 SearchErrorCode = Literal[
     "INVALID_INPUT", "UPSTREAM_TIMEOUT", "UPSTREAM_UNAVAILABLE",

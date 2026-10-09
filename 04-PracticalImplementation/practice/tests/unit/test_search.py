@@ -10,6 +10,7 @@ import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.mcpserver.tools.base import Tool
 
+from app.tools import search as search_module
 from app.tools.search import search_products
 from tests.fixtures.search_http import mock_search_http
 
@@ -113,37 +114,56 @@ async def test_search_products_category_without_products_returns_empty_result() 
 
 async def test_search_products_later_page_match_returns_candidate() -> None:
     """
-    Given: 첫 페이지 10개는 검색어와 불일치하고 다음 페이지에 일치 상품이 있다.
+    Given: 현재 PAGE_SIZE만큼 채운 첫 페이지에는 일치 상품이 없다.
+           다음 페이지에 검색어와 일치하는 상품 한 개가 있다.
     When: search_products로 needle을 검색한다.
     Then: 첫 페이지를 이유로 중단하지 않고 두 번째 페이지의 후보를 반환한다.
     """
+    page_size = search_module.PAGE_SIZE
+    matching_id = page_size + 1
     pages = {
-        0: _page([_product(i, "Other") for i in range(1, 11)], total=11),
-        10: _page([_product(11, "Needle")], total=11, skip=10),
+        0: _page(
+            [_product(i, "Other") for i in range(1, page_size + 1)],
+            total=matching_id,
+        ),
+        page_size: _page(
+            [_product(matching_id, "Needle")], total=matching_id, skip=page_size,
+        ),
     }
     with mock_search_http(_handler(pages)):
         result = await search_products(CATEGORY, "needle")
     assert result == {
         "status": "ok",
-        "products": [{"product_id": 11, "name": "Needle", "category": CATEGORY}],
+        "products": [
+            {"product_id": matching_id, "name": "Needle", "category": CATEGORY},
+        ],
         "count": 1,
     }
 
 
 @pytest.mark.parametrize(
-    ("sizes", "total"), [([10, 2], 12), ([2, 1], 3), ([10], 10), ([0], 0)],
+    "scenario", ["last-page", "short-middle-page", "exact-multiple", "empty"],
 )
 async def test_search_products_paginated_response_sends_expected_http_requests(
-    sizes: list[int], total: int,
+    scenario: str,
 ) -> None:
     """
-    Given: 마지막 페이지·짧은 중간 페이지·정확한 페이지 배수·빈 카테고리 조건.
+    Given: 현재 PAGE_SIZE를 기준으로 마지막 페이지·짧은 중간 페이지·
+           정확한 페이지 배수·빈 카테고리 조건 중 하나의 응답을 제공한다.
     When: 모의 HTTP로 search_products를 실행한다.
-    Then: 카테고리 목록을 먼저 GET으로 조회하고, 상품 페이지를 limit=10으로 요청한다.
+    Then: 카테고리 목록을 먼저 GET으로 조회하고, 상품 페이지의 limit에는 설정한 크기를 전달한다.
           다음 요청의 skip은 검색어 일치 여부와 관계없이 조회한 상품 수만큼 증가한다.
           전체 상품 수에 도달하면 추가 페이지를 요청하지 않는다.
           모든 요청의 연결·읽기·쓰기·연결 풀 대기 제한 시간은 각각 10초로 설정된다.
     """
+    page_size = search_module.PAGE_SIZE
+    sizes = {
+        "last-page": [page_size, 2],
+        "short-middle-page": [2, 1],
+        "exact-multiple": [page_size],
+        "empty": [0],
+    }[scenario]
+    total = sum(sizes)
     pages = {}
     offsets = []
     offset = 0
@@ -161,7 +181,9 @@ async def test_search_products_paginated_response_sends_expected_http_requests(
         assert str(request.url.copy_with(query=None)) == (
             "https://dummyjson.com/products/category/smartphones"
         )
-        assert dict(request.url.params) == {"limit": "10", "skip": str(skip)}
+        assert dict(request.url.params) == {
+            "limit": str(page_size), "skip": str(skip),
+        }
     for request in requests:
         assert request.method == "GET"
         assert request.extensions["timeout"] == {
@@ -350,7 +372,6 @@ INVALID_PAGE_CASES = [
     pytest.param("skip", 1, id="wrong-skip"),
     pytest.param("total", 0, id="count-exceeds-total"),
     pytest.param("limit", 0, id="count-exceeds-limit"),
-    pytest.param("limit", 11, id="limit-exceeds-page-size"),
 ]
 
 
@@ -368,6 +389,23 @@ async def test_search_products_invalid_page_response_raises_tool_error(
         del page[field]
     else:
         page[field] = value
+    with mock_search_http(_handler({0: page})):
+        with pytest.raises(ToolError) as raised:
+            await search_products(CATEGORY)
+    error = json.loads(str(raised.value))
+    assert error["code"] == "INVALID_RESPONSE"
+    assert error["retryable"] is False
+
+
+async def test_search_products_page_limit_exceeds_configured_size_raises_tool_error() -> None:
+    """
+    Given: 응답 limit이 현재 PAGE_SIZE보다 1 크다.
+    When: 상품 한 개를 포함한 페이지로 search_products를 실행한다.
+    Then: 응답 limit이 요청 크기를 초과하므로 INVALID_RESPONSE로 실패한다.
+    """
+    page_size = search_module.PAGE_SIZE
+    page = _page([_product()])
+    page["limit"] = page_size + 1
     with mock_search_http(_handler({0: page})):
         with pytest.raises(ToolError) as raised:
             await search_products(CATEGORY)
@@ -426,13 +464,14 @@ async def test_search_products_invalid_product_count_raises_tool_error(
     scenario: str,
 ) -> None:
     """
-    Given: 한 페이지에 중복 상품 ID가 있거나 상품 수가 요청 크기 10을 초과한다.
+    Given: 한 페이지에 중복 상품 ID가 있거나 상품 수가 현재 PAGE_SIZE보다 1 많다.
     When: search_products를 실행한다.
     Then: INVALID_RESPONSE로 실패한다.
     """
+    page_size = search_module.PAGE_SIZE
     products = (
         [_product(), _product()] if scenario == "duplicate-id"
-        else [_product(i) for i in range(1, 12)]
+        else [_product(i) for i in range(1, page_size + 2)]
     )
     with mock_search_http(_handler({0: _page(products)})):
         with pytest.raises(ToolError) as raised:

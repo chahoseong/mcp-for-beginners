@@ -45,7 +45,7 @@ def test_prepare_quote_valid_arguments_preserves_quote_workflow() -> None:
     """
     Given: 유효한 구매 조건과 설계에서 승인한 전체 견적 작업 지시.
     When: prepare_quote로 메시지를 생성한다.
-    Then: 정책 확인·후보 검색·재고·견적·비교표·실패 보고·담당자 선택 지시를 유지한다.
+    Then: 정책 버전 확인·상품 ID 연결·정렬·비교표와 구매 조건 유지 지시를 포함한다.
     """
     text = prepare_quote("smartphones", "3", "2000.00")[0].content.text
     expected_steps = [
@@ -62,8 +62,13 @@ def test_prepare_quote_valid_arguments_preserves_quote_workflow() -> None:
         "Host가 제공한 quote://policy를 확인하고 해당 정책을 적용해주세요.",
         "정책을 읽지 못했다면 금액을 추측하지 말고 작업을 중단해주세요.",
         "product_id, quantity, budget을 전달하며 가격·할인율은 직접 입력하지 마세요.",
+        "원래 요청의 수량과 예산을 임의로 변경하지 마세요.",
+        "견적의 policy_version이 quote://policy의 버전과 다르면 작업을 중단해주세요.",
+        "정책을 다시 확인한 새 작업에서 진행해주세요.",
+        "검색·재고·견적 결과는 같은 product_id끼리 연결해주세요.",
+        "최종 금액 오름차순으로 표시하고, 금액이 같으면 상품 ID 오름차순으로 표시해주세요.",
         "서로 다른 후보의 금액이나 배송비를 합산하지 마세요.",
-        "배송비, 세금, 최종 금액, 재고 확인 시각, 견적 안내기간을 비교표로 작성해주세요.",
+        "배송비, 세금, 최종 금액, 재고 확인 시각, 견적 생성 시각, 견적 안내기간을 비교표로 작성해주세요.",
         "적용한 정책 버전과 가격·재고를 예약하지 않았다는 점도 표시해주세요.",
         "조건을 만족하는 후보가 없다면 그 이유를 설명하고 조건 변경을 요청해주세요.",
         "조회 실패가 남아 있다면 전체 후보 검증을 완료했다고 표현하지 마세요.",
@@ -123,4 +128,3 @@ def test_prepare_quote_surrounding_whitespace_returns_trimmed_conditions() -> No
     assert "추가 검색어: Samsung (비어 있으면 추가 조건 없음)" in text
     assert "동일 모델의 요청 수량: 3개\n" in text
     assert "총 예산: 2000.00 USD\n" in text
-
