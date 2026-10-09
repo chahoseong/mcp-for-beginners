@@ -10,21 +10,29 @@ from mcp import Client
 pytestmark = pytest.mark.anyio
 
 
-async def test_should_list_stock_tool_when_tools_are_requested(
+async def test_should_list_registered_tools_when_tools_are_requested(
     mcp_client: Client,
 ) -> None:
     """
     Given: 실제 앱 서버에 stdio로 연결한 MCP Client.
     When: tools/list를 요청한다.
-    Then: check_stock 하나와 필수 정수 입력 2개·최솟값 1을 받는다.
+    Then: 재고·검색 도구와 각 도구의 필수·선택 인자 및 입력 제약을 받는다.
     """
     result = await mcp_client.list_tools()
-    assert [tool.name for tool in result.tools] == ["check_stock"]
-    schema = result.tools[0].input_schema
+    tools = {tool.name: tool for tool in result.tools}
+    assert set(tools) == {"check_stock", "search_products"}
+    assert len(result.tools) == 2
+    schema = tools["check_stock"].input_schema
     assert set(schema["required"]) == {"product_id", "quantity"}
     for field in ("product_id", "quantity"):
         assert schema["properties"][field]["type"] == "integer"
         assert schema["properties"][field]["minimum"] == 1
+    search_schema = tools["search_products"].input_schema
+    assert search_schema["required"] == ["category"]
+    assert search_schema["properties"]["category"]["type"] == "string"
+    assert search_schema["properties"]["category"]["minLength"] == 1
+    assert search_schema["properties"]["keyword"]["type"] == "string"
+    assert search_schema["properties"]["keyword"]["default"] == ""
 
 
 async def test_should_return_stock_result_when_stock_is_requested(
