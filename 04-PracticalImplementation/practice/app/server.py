@@ -8,6 +8,7 @@ from mcp.server import MCPServer
 from app.middleware import create_prompt_validation_middleware
 from app.prompts.quote import prepare_quote
 from app.resources.policy import get_quote_policy
+from app.tools.quote import calculate_quote
 from app.tools.search import search_products
 from app.tools.stock import check_stock
 
@@ -15,6 +16,7 @@ mcp = MCPServer("product-quote-practice")
 mcp.middleware.append(create_prompt_validation_middleware(mcp))
 mcp.tool()(check_stock)
 mcp.tool()(search_products)
+mcp.tool()(calculate_quote)
 mcp.resource(
     "quote://policy",
     name="quote_policy",

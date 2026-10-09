@@ -16,12 +16,12 @@ async def test_should_list_registered_tools_when_tools_are_requested(
     """
     Given: 실제 앱 서버에 stdio로 연결한 MCP Client.
     When: tools/list를 요청한다.
-    Then: 재고·검색 도구와 각 도구의 필수·선택 인자 및 입력 제약을 받는다.
+    Then: 재고·검색·견적 도구와 각 도구의 필수·선택 인자 및 입력 제약을 받는다.
     """
     result = await mcp_client.list_tools()
     tools = {tool.name: tool for tool in result.tools}
-    assert set(tools) == {"check_stock", "search_products"}
-    assert len(result.tools) == 2
+    assert set(tools) == {"check_stock", "search_products", "calculate_quote"}
+    assert len(result.tools) == 3
     schema = tools["check_stock"].input_schema
     assert set(schema["required"]) == {"product_id", "quantity"}
     for field in ("product_id", "quantity"):
@@ -33,6 +33,20 @@ async def test_should_list_registered_tools_when_tools_are_requested(
     assert search_schema["properties"]["category"]["minLength"] == 1
     assert search_schema["properties"]["keyword"]["type"] == "string"
     assert search_schema["properties"]["keyword"]["default"] == ""
+    quote_schema = tools["calculate_quote"].input_schema
+    assert set(quote_schema["required"]) == {"product_id", "quantity", "budget"}
+    for field in ("product_id", "quantity"):
+        assert quote_schema["properties"][field]["type"] == "integer"
+        assert quote_schema["properties"][field]["minimum"] == 1
+    budget_schema = quote_schema["properties"]["budget"]
+    assert budget_schema["multipleOf"] == 0.01
+    budget_types = {branch["type"] for branch in budget_schema["anyOf"]}
+    assert budget_types == {"integer", "number"}
+    for branch in budget_schema["anyOf"]:
+        if branch["type"] == "integer":
+            assert branch["minimum"] == 1
+        else:
+            assert branch["exclusiveMinimum"] == 0
 
 
 async def test_should_return_stock_result_when_stock_is_requested(
