@@ -24,5 +24,6 @@
 | [MCP Apps — 2026-10-06](03-mcp-apps-2026-10-06.md) | Python/화면 SDK 실습·VS Code 그룹화·최초 결과 중복 진단·FAQ·실패/복구 교정 경위 |
 | [선택 단원 검토](03-optional-units-2026-10-06.md) | 07 Foundry Toolkit·12 MCP Hosts 검토·보류 선택과 당시 재개 권고 |
 | [Module 03 실습 근거 보존](03-implementation-evidence-2026-10-06.md) | Client·LLM·테스트·배포의 단계별 출력, 최종 보완과 안내/실행 주체 |
+| [Module 04 과제·검토 — 2026-10-09](04-practical-implementation-2026-10-09.md) | 설계 시험·최소 구현·Host·측정 개선의 제출/검토 근거, 협업 논의와 필수 범위 정정의 상세 경위 |
 
 기존 기록을 보존하기 위해 이동했다. 이후 모든 문답을 이 형식으로 누적하는 규칙은 아니다.
