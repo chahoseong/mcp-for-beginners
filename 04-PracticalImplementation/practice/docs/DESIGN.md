@@ -108,7 +108,8 @@ Error executing tool check_stock: {"code": "PRODUCT_NOT_FOUND", "message": "상�
 조회 단계에서 사용하는 앱 오류 코드는 `PRODUCT_NOT_FOUND`, `UPSTREAM_TIMEOUT`,
 `UPSTREAM_UNAVAILABLE`, `INVALID_RESPONSE`다. `retryable: true`는 재시도 가능성
 정보이며, 이번 구현에서 자동으로 재시도했다는 뜻은 아니다.
-위 최초 설계의 `POLICY_UNAVAILABLE`은 후속 견적 계산의 오류로 남아 있다.
+`calculate_quote`는 정책 원본이 누락되거나 올바르지 않으면 최초 설계의
+`POLICY_UNAVAILABLE`을 `ToolError`로 전달한다.
 
 Tool 입력은 `Annotated`의 `Field(strict=True, ge=1)` 제약을 SDK의 Pydantic 검증에
 맡긴다. 문자열 `"3"`을 정수로 바꾸어 받지 않으며, 잘못된 입력은 함수 실행과
@@ -140,6 +141,15 @@ Prompt의 이름·필수 인자·추가 인자는 middleware에서, 카테고리
 - 검색 결과가 없으면 `status: "ok"`, `products: []`, `count: 0`을 반환한다.
 - 검색 단계에서는 예산 충족 여부를 확정하지 않는다.
 
+과제 3에서는 검색 실패에도 **과제 2 오류 계약**을 적용한다. 조회 실패를
+정상 반환값으로 전달하여 호출자가 성공으로 오해하는 일을 막기 위해,
+최초 설계의 `status: "error"` 객체 대신 `ToolError`를 발생시킨다.
+입력 타입·필수 인자·빈 카테고리 오류는 SDK가 함수 실행 전에 검증한다.
+외부 카테고리 목록으로 확인한 존재하지 않는 카테고리는 앱의
+`INVALID_INPUT` 오류로 전달한다. 나머지 조회 실패는 `UPSTREAM_TIMEOUT`,
+`UPSTREAM_UNAVAILABLE`, `INVALID_RESPONSE`와 재시도 가능 여부를 전달하며,
+중간 페이지가 실패해도 일부 후보를 성공 결과로 반환하지 않는다.
+
 ### `check_stock`
 
 | 항목      | 설계                                                                                                                                                                                  |
@@ -166,7 +176,17 @@ Prompt의 이름·필수 인자·추가 인자는 middleware에서, 카테고리
 - 예산을 초과해도 계산 자체가 성공했다면 `status: "ok"`, `within_budget: false`와 계산 내역을 반환한다.
 - 통화, 배송비, 세율, 계산 순서, 반올림, 유효기간은 아래 Resource와 같은 서버 정책을 사용한다.
 - 단가는 0 이상의 유한한 수치, 할인율은 0~100 범위의 유한한 수치여야 한다. 필드가 없거나 범위가 잘못되면 추측하지 않고 `INVALID_RESPONSE`를 반환한다.
-- Python 구현 시 내부 금액 계산에는 `Decimal`을 사용하고 `ROUND_HALF_UP`으로 반올림한다. JSON 출력은 소수 둘째 자리까지의 금액을 `number`로 반환한다.
+- Python 구현 시 내부 금액 계산과 예산 비교에는 `Decimal`을 사용하고 `ROUND_HALF_UP`으로 반올림한다. 계산한 할인·상품 금액·배송비·세금·총액은 소수 둘째 자리의 JSON `number`로 반환한다.
+- `unit_price`와 `discount_percentage`는 원본 값을 유지한다. 예를 들어 단가가 `0.335`이면 출력에서도 `0.335`이며, 단가를 먼저 반올림하지 않고 수량을 곱한 뒤 정책 순서대로 계산한다. 표시한 단가가 계산에 사용한 값과 달라지는 일을 막기 위한 선택이다.
+
+과제 3의 `calculate_quote` 실패에도 **과제 2 오류 계약**을 적용한다.
+조회·계산·정책 실패를 정상 견적으로 오해하지 않도록 최초 설계의
+`status: "error"` 객체 대신 `ToolError`를 발생시킨다. 입력 타입·범위·예산
+소수 자릿수·필수 인자 오류는 SDK가 HTTP 조회 전에 검증하며, 앱의 오류
+JSON 대신 SDK 검증 설명으로 전달된다. 상품 조회 실패는 기존 재고 조회와
+같은 오류 코드와 재시도 정보를 사용하고, 원본 상품 필드 또는 유한한 금액
+구성 실패는 `INVALID_RESPONSE`, 정책 오류는 `POLICY_UNAVAILABLE`로 전달한다.
+실패에는 성공 견적 필드를 반환하지 않는다. 예산 초과는 정상 계산 결과다.
 
 ## 3. Resource와 Prompt
 
