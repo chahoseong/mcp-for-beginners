@@ -9,4 +9,5 @@
 | [02 — Security](02-security.md) | 완료 범위, 다음 모듈로 이어갈 한계와 원문 교정 사항 |
 | [03 — Getting Started](03-getting-started.md) | 첫 서버부터 MCP Apps까지의 실습 요약과 남은 확인 사항 |
 | [04 — Practical Implementation](04-practical-implementation.md) | 완료한 설계·협업 구현·Host·측정 개선의 범위, 평가 한계와 다음 모듈 위치 |
+| [05 — Advanced Topics](05-advanced-topics.md) | 학습 목표별 필수·선택 제안, 권장 순서와 현행 명세/예제 교정 사항; 수업 미시작 |
 | [history/INDEX.md](history/INDEX.md) | 과거 답변·교정 경위의 상세 확인이 필요한 경우 |
