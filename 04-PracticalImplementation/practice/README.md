@@ -1,18 +1,18 @@
 # 상품 견적 MCP 실습
 
-[Practical Implementation](../README.md) 과제 2의 최소 Python MCP 서버다.
+[Practical Implementation](../README.md) 과제 2·3에서 구현한 Python MCP 서버다.
 기능과 정책의 설계는 [DESIGN.md](./docs/DESIGN.md)를 참고한다.
 
-제공 기능은 재고 조회 Tool `check_stock`, 정책 Resource `quote://policy`,
+제공 기능은 상품 검색 Tool `search_products`, 재고 조회 Tool `check_stock`,
+견적 계산 Tool `calculate_quote`, 정책 Resource `quote://policy`,
 작업 지시 Prompt `prepare_quote`다. Prompt 조회는 메시지를 반환하는 단계이며,
-전체 견적을 실행하지 않는다. `search_products`, `calculate_quote`, 자동 재시도와
-배포는 후속 과제의 범위다.
+전체 견적을 실행하지 않는다. 자동 재시도와 배포는 후속 과제의 범위다.
 
 ## 구현 판단과 협업 범위
 
 - Tool 입력은 선언된 제약을 SDK의 Pydantic 검증에 맡겨 함수 실행 전에 거절한다. 도구 본문에서 검증을 빠뜨리는 문제를 줄이기 위한 선택이다. Prompt 이름·인자는 middleware, 수량·예산 등의 문자열 값은 Prompt 함수에서 검사한다.
 - 재고 부족은 확인된 조회 결과이고, 조회 실패는 재고를 확인하지 못한 상태다. 실패에는 `ToolError`를 발생시켜 MCP의 오류 표시로 전달한다. 실제 응답 형식과 최초 설계의 차이는 [DESIGN.md](./docs/DESIGN.md)의 과제 2 오류 계약에 정리했다.
-- 정책 원본은 `app/policy.py` 한곳에서 관리한다. Resource가 이 원본으로 안내를 생성하며, 향후 견적 계산도 같은 원본을 참조하도록 설계했다. 정책 변경이 일부 기능에만 반영되는 실수를 방지하기 위해서다.
+- 정책 원본은 `app/policy.py` 한곳에서 관리한다. Resource가 이 원본으로 안내를 생성하며, `calculate_quote`도 같은 원본을 참조해 견적을 계산한다. 정책 변경이 일부 기능에만 반영되는 실수를 방지하기 위해서다.
 
 학습자는 주제·사용자·검색 방식·후보 제시 방향을 승인하고, 작업 단위별로
 구현을 검토했다. 테스트 목적과 분류·이름, 입력 오류 응답, middleware 적용과
