@@ -79,6 +79,36 @@ stdio 입력을 기다리는 상태가 정상이다. pytest와 Inspector는 서�
 실제 API 테스트는 네트워크 실패를 건너뛰지 않는다. 재고 숫자는 고정하지 않는다.
 MCP 테스트의 서버 로그는 pytest 임시 디렉토리의 `server.stderr.log`에서 확인한다.
 
+## VS Code Host에서 사용
+
+VS Code에서 저장소 루트 `C:/Users/chahoseong/mcp-for-beginners`를 연다.
+루트의 `.vscode/mcp.json`에 `product-quote-practice` 서버가 등록되어 있다.
+VS Code가 기존 가상환경의 Python으로 서버를 실행하므로 별도로 서버를 켜지 않는다.
+
+1. 명령 팔레트에서 `MCP: List Servers`를 실행하고 `product-quote-practice`를
+   선택해 시작한다. 연결에 실패하면 같은 메뉴의 `Show Output`으로 로그를 확인한다.
+2. 새 채팅에서 `Session Target`을 **Local**로 선택하고 Agent 모드를 사용한다.
+   `Copilot` 대상도 컴퓨터에서 실행되지만, 여기서 필요한 **Local** 대상과는 다르다.
+   `Configure Tools`에서 `search_products`, `check_stock`, `calculate_quote`를 활성화한다.
+3. 작업을 전송하기 전에 `Add Context > MCP Resources`에서 `quote://policy`를
+   첨부한다. 메뉴를 찾기 어려우면 명령 팔레트에서 `MCP: Browse Resources...`를
+   실행하고, `견적 정책` (`quote://policy`) 항목의 종이클립 버튼으로 채팅에 첨부한다.
+   항목 자체를 선택해 정책을 열어 보기만 한 상태와 채팅 문맥에 첨부한 상태를 구분한다.
+4. 채팅 입력창에 `/mcp.`를 입력하고 상품 견적 서버의 `prepare_quote`를 선택한다.
+   확인한 VS Code 1.141.0에서는 `/mcp.product-quote-practice.prepare_quote`로 표시된다.
+   직접 입력해 전송하는 대신 자동 완성 항목을 선택해야 서버의 Prompt를 조회한다.
+   화면 안내에 따라 `category`, `quantity`, `budget` 문자열을 입력한다.
+   `keyword`를 생략하면 추가 검색 조건이 없다. 서버가 반환한 메시지로 작업을
+   시작하며, Prompt 메시지나 정책을 직접 작성해 대체하지 않는다.
+
+채팅에서 Prompt 선택·인자와 정책 Resource 첨부를 확인한 뒤 작업을 전송한다.
+주요 Tool 호출과 최종 답변은 해당 채팅에서 확인한다.
+UI의 정확한 명령 표기는 버전에 따라 달라질 수 있으므로 `/` 자동 완성 목록에서
+서버와 Prompt 이름을 확인한다.
+확인한 VS Code 1.141.0에서는 `Copilot` 대상의 Agent Host 세션에서 MCP Prompt
+자동 완성이 제외된다. 모델의 Auto 선택과 별개로 `Session Target`을 확인한다.
+Resource 첨부 지원도 채팅 세션 종류에 따라 달라진다.
+
 ## Inspector로 수동 확인
 
 Inspector를 사용하려면 Node.js 22.19 이상이 필요하다. 확인한 Inspector 버전은
