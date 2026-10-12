@@ -1,0 +1,9 @@
+[project]
+name = "mcp-cancellation-practice"
+version = "0.1.0"
+description = "Observe MCP stdio request cancellation and resource cleanup"
+requires-python = ">=3.12,<3.13"
+dependencies = ["mcp==2.3.0"]
+
+[tool.uv]
+package = false

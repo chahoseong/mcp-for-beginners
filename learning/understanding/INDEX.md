@@ -5,7 +5,7 @@
 | 기록 | 선택 기준 |
 | --- | --- |
 | [Architecture](architecture.md) | MCP 역할, Host·Client·Server, 표준화와 호출 흐름 |
-| [Tools, Resources, Prompts](tools-resources-prompts.md) | 서버 기능·데이터 제공, 업무 도구 계약/결과 연결·정책/보장 범위, Python 도구·low-level 구성 |
+| [Tools, Resources, Prompts](tools-resources-prompts.md) | 서버 기능·데이터 제공, 업무 도구 계약/결과 연결·정책/보장 범위, Python 도구·오류 보존/로그 정보 분리·low-level 구성과 Server 자원 수명 |
 | [Python Client](python-client.md) | 비동기 문법, Client 연결·오류 처리, LLM Tool 선택·결과 연결 |
 | [Testing & Debugging](testing-and-debugging.md) | Inspector·서버 로그 진단, 종료 코드, 단위/통합·테스트 보장 범위 |
 | [Transports](transports.md) | Data·Transport Layer, JSON-RPC, 전송 방식과 요청 메타데이터 |
