@@ -49,7 +49,7 @@
 
 ## 재개와 기록
 
-- 요청 취소·자원 정리와 승인된 Error Handling 보강을 완료했다. 다음은 5.3 핵심 + 5.8이며 Tasks Extension은 선택으로 확정했다. 기존 JWT 실습을 반복하지 않는다. 실제 SDK async 정리·공유 자원 lifespan의 독립 구현과 HTTP 취소 실행은 확인하지 않았다. 오류 분류·작은 수정·로그 정보 선택의 근거와 한계는 개념 기록에 둔다.
+- 요청 취소·자원 정리와 Error Handling 보강, 2026-10-13 승인된5.3 핵심+5.8 선택 범위 수업을 마쳤다. 다음은5.2 Multi-modality이며 Tasks Extension은 선택으로 유지한다. 실제 SDK async 정리·공유 자원 lifespan의 독립 구현과 HTTP 취소 실행은 확인하지 않았다. OAuth·보안 완료 범위와 한계는 아래 요약과 개념 기록에 둔다.
 - 최신 개념 근거: [Python 비동기·정리](../understanding/python-client.md), [취소 관찰](../understanding/transports.md), [Server 자원 수명](../understanding/tools-resources-prompts.md). 2026-10-12 수업 종료 시 구조를 점검하고 대기 중/미실행 문구와 라우팅을 갱신했다. 별도 파일 이동은 필요하지 않았다.
 - 기존 상태 참조: [Architecture](../understanding/architecture.md), [Transports](../understanding/transports.md), [Security](../understanding/security/INDEX.md), [Client Primitives](../understanding/client-primitives.md). 이번 계획 검토만으로 이해 등급을 변경하지 않았다.
 - 검사는 약속한 계약·대표 사례에 맞춰 수행한다. 테스트 수를 성취 기준으로 쓰거나 실행 가능한 결과를 학습자에게 중복 전사하게 하지 않는다. 개념 판단과 협업 구현/실행 경험은 구분한다.
@@ -72,7 +72,35 @@
 - [현행 취소 명세](https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/cancellation): stdio는 notifications/cancelled에 요청 ID를 참조; HTTP는 해당 SSE 응답 스트림 종료가 신호이며 취소 알림을 보내지 않는다. 경합과 최종 응답 부재의 한계를 함께 다룬다.
 - [SDK cancellation](https://py.sdk.modelcontextprotocol.io/handlers/cancellation/), [lifespan](https://py.sdk.modelcontextprotocol.io/handlers/lifespan/): Client Task 취소/read_timeout_seconds와 handler 전파를 사용한다. HTTP json_response=True(현행)/stateless_http=True(레거시) 제한을 구분한다. await 정리는 시간 제한을 둔 shield로 보호한다. HTTP 실제 비교는 stdio 핵심 관찰 이후 선택 보강이다.
 
+## OAuth·보안 상세 수업 제안 — 2026-10-12
+
+- 상태/자료: 학습자가 상세 계획과 선택 범위를 승인해 2026-10-12 수업을 시작했다. 원문 5.3/5.8, [현행 인가](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization), [발견](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/authorization-server-discovery), [M2M 확장](https://modelcontextprotocol.io/extensions/auth/oauth-client-credentials), [SDK 서버](https://py.sdk.modelcontextprotocol.io/run/authorization/), [SDK Client](https://py.sdk.modelcontextprotocol.io/client/oauth-clients/)과 설치된 MCP2.3.0을 대조했다. 역할과 grant 및 발급 주소 확인, issuer/audience 거부 이유를 확인했다(인증 기록). well-known 주소 구성과 OAuth resource/MCP Resource 구분, 발견한 값과 발급 요청의 연결을 보충했다. 교사가 아래 실제 OAuth 실습을 준비·검증했고 학습자는 실행을 보고했다. 현재 SDK에 위임된 코드 흐름을 보충한다.
+- 목표/순서: AS/Client/RS 역할과 OAuth/OIDC 구분 → 사용자 위임 Code+PKCE 대 M2M client_credentials → 401/PRM/AS 메타데이터 발견 → 서명/issuer/audience/resource/scope 각각의 판단 → 로컬 Python 발급·발견·실제 MCP HTTP 호출 관찰 → 작업/대상 권한과 외부 정보의 신뢰 경계·최소 감사 근거. 관련 단위를 묶어 의미 있는 지점에서 질문하고 답변을 기다린다.
+- 시각 자료: 역할 배치도와 번호 있는 시간축, 두 grant의 사용자/브라우저/Client 레인 비교, 서로 다른 메타데이터의 목적지 지도, 토큰/검사 비교 카드, 실제 HTTP 헤더·서버 로그의 같은 요청 비교, 단계 선택/조건 변경이 도움이 되는 구간의 상호작용 자료를 사용한다. 가상 시뮬레이션과 실제 실행 자료를 구분한다.
+- 재개 보충: well-known과 OAuth resource/MCP Resource 구분 설명 뒤 학습자가 메타데이터 조회와 발급 요청의 연결을 요청했다. 문서를 찾는 단계와 그 값으로 요청을 만드는 단계를 따로 설명한 한계를 보완한다. MCP 메타데이터의 resource는 보호 대상, 인가 서버 메타데이터의 token_endpoint는 발급 요청 주소로 연결하고 실제 Client 자격·scope 검사와 토큰 사용까지 한 흐름으로 보여준다. 새 연결 판단 근거가 없으므로 기존 등급을 유지하고 실습 완료로 간주하지 않는다.
+- 실습/분담: Python 독립 practice에서 교사가 학습용 발급 서비스·SDK 연결/관찰 코드를 준비하고 현재 SDK 인자를 검사한다. 학습자는 발급/발견 응답과 토큰 대상·권한의 핵심 조건을 분석하고 새 사례를 판단한다. 설치형 Client의 브라우저 Code+PKCE 전체 구현, Java/Spring·Azure/Entra 구축은 선택이다. 실제 기본 실행은 발견→M2M 토큰 발급→MCP tools 호출이며 HTTP auth를 건너뛰는 in-memory/stdio로 검증을 대체하지 않는다. 기존 JWT 변조/만료 반복·대규모 테스트/AS 독립 개발은 요구하지 않는다.
+- 교정: /hello HTTP 데모를 MCP tools 호출의 증거로 간주하지 않는다. client_credentials는 OAuth의 M2M grant이며 MCP에서는 별도 인가 확장이다. OAuth는 인가, 사용자 로그인/신원은 관련 인증 처리와 구분하고 JWT는 토큰 형식의 선택이다. aud를 Client ID로 고정하지 않고 MCP 대상 식별자/검증 설정과 맞춘다. 서명 유효만으로 수락하지 않는다. HTTP 인가 거부(401/403)와 도구 업무 실패의 isError를 구분하며 기존 수업의 tool-scope 예외 설계를 규범으로 일반화하지 않는다.
+- 현행 범위: HTTP 인가 지원 시 발견/대상 검증과 매 요청 credentials를 적용하고 stdio에 같은 흐름을 붙이지 않는다. Client 등록은 실습에서 사전 등록을 사용한다. 기존 사전 등록 정보가 있으면 먼저 사용하고, 없으면 지원되는 CIMD, 이후 호환용 DCR 순서이며 DCR은 deprecated라고 고지한다. 브라우저 흐름의 authorization response iss 검사와 Access Token issuer 검사는 서로 다른 위치로 설명한다. 설치된 ClientCredentialsOAuthProvider는 scope(단수)·issuer를 받으며 웹 확장 예제 scopes 표기를 그대로 복사하지 않는다. audience/resource 검사는 검증기 또는 AuthSettings의 명시 설정으로 준비하고 자동 보장으로 설명하지 않는다.
+- 완료/평가: 역할·grant 선택의 이유, 발견 단계의 다음 목적지, 신뢰된 서명이 있어도 잘못된 대상의 토큰 거부 이유, 사용자/작업/대상 권한의 검사 위치를 배운 범위의 다른 사례로 설명한다. 준비된 실제 Python 발급·발견·MCP 호출을 관찰하고 성공/거부를 연결하는 근거를 구분한다. 전체 IdP 구현 숙달은 주장하지 않는다. 로그 항목 선택은 앞선 Error Handling 근거를 재사용하며 외부 API 자격과 MCP 자격, 외부 응답과 작업 지시의 신뢰 경계를 보안 수업에 연결한다.
+- 2026-10-12 제외 범위 설명: OAuth 원문의 Java/Maven Quick start·Testing은 Python의 실제 MCP 흐름으로 대체한다. Container build는 기존 Docker 학습 재사용으로 선택, Production Security는 기본 보관/권한/운영과의 차이를 개요로 다루되 운영 IdP·키 회전·Key Vault 전체 구축은 선택이다. Azure Container Apps와 API Management는 계정·특정 배포/게이트웨이 기술이므로 선택으로 둔다. 보충 Code+PKCE는 개념 필수/브라우저 전체 구현 선택이다.
+- Security 섹션별 범위: Entra/.NET/Java의 제품 구현, Prompt Shields/Content Safety 연계, Application Insights/Log Analytics 구축은 선택이며 인증/신뢰 경계/감사 원리는 핵심에 남긴다. Confused Deputy와 Token Passthrough 예방의 구간·동의/권한 판단은 핵심, 전체 OAuth 프록시·토큰 교환 구축은 선택이다. Session Hijacking의 레거시 프로토콜 세션 구현은 현행 업무 상태 식별자 접근 통제로 교정하고 Redis/세션 암호화 구축은 요구하지 않는다.
+- 운영 확장: Advanced Threat Detection Pipeline의 위험 점수·이상 탐지·자동 대응은 운영 근거가 필요한 별도 주제로 유보한다. Supply Chain Security Integration의 기본 위험은 Module02 근거를 연결하고 GitHub Advanced Security/Defender/SBOM 자동 통합은 선택이다. Best Practices Checklist는 프로토콜 요구/배포 조건/제품 선택을 구분해 개요에 사용하고 Microsoft Security Ecosystem Benefits는 참고로 둔다. 학습목표의 운영 샌드박스 전체 구축도 선택이다. 이번 계획은 두 README의 모든 제품 구현 목표를 완료하는 과정이라고 주장하지 않는다.
+
 ## 실제 실습 준비·교사 검증 — 2026-10-12
+
+- OAuth 위치/분담: [OAuth practice](../../05-AdvancedTopics/mcp-oauth2-demo/practice/README.md)에 독립 Python3.12.10/MCP2.3.0 환경·uv.lock·자격 생성·발급 서비스·보호 MCP 서버·관찰 Client를 교사가 준비했다. 학습자는 발견/발급 요청과 도구 결과의 연결을 관찰하며 전체 보조 코드 검토를 요구하지 않는다. 실습의 opaque 토큰은 별도 자격으로 보호된 Token Introspection을 통해 검증하므로 기존 JWT 변조 실습을 반복하지 않는다.
+- OAuth 실제 검증: 별도 loopback 프로세스(AS9100/MCP8100)의 초기401→PRM→AS 메타데이터→resource와 scope를 포함한 발급→MCP get_quote(is_errorFalse, total20.00USD)를 확인했다. 잘못된 Client 자격401/다른 발급 대상400 거부도 확인했고 검사 후 교사 소유 프로세스만 종료했다. 자격/토큰 값을 출력하지 않았고 .env/.venv는 Git 제외를 확인했다. 학습자의 안내된 실행·독립 이해는 이 검사 성공과 별개다.
+- OAuth 학습자 실행/보완: SDK에 감춰진 흐름의 설명을 요청한 뒤 실제 PRM 조회 로그를 설명한 구간과 연결했다. 2026-10-13에는 Tools=['get_quote']/is_errorFalse/데모 상품 수량2·총액20.00USD의 최종 결과도 제출했다. 제공된 실제 발급·발견·보호 MCP 호출의 정상 관찰을 확인했고 인증 기록에 최신 근거를 보존했다. 독립 전체 구현/운영 보안 숙달로 일반화하지 않는다.
+- OAuth 흐름 보충의 경위/적용 범위: 학습자는 SDK에 숨겨진 중간 단계가 개념 흐름과 연결되지 않고 표준/실습 정의도 구분하기 어렵다고 설명했다. 이번 프로그램은 전체→단계→실제 코드→세부 규칙과 다양한 시각 자료로 재구성한다. 학습자는 이를 전체 학습 선호로 확장하지 말라고 정정했고 교사가 공통 RULES에 추가했던 두 항목을 삭제했다. 이 방식은 이번 프로그램에만 적용한다. 승인된 전체 지도에서 접근 준비(토큰 없는 첫 요청/401/두 메타데이터/발급·저장)부터 실제 코드에 대응한다. 기존 등급을 유지하며 앞서 제시한 set_quote 권한 질문은 맥락 보완 동안 보류한다.
+- OAuth 교정/한계: SDK2.3.0 OAuthMetadata가 client_credentials만 지원하는 서비스에도 authorization_endpoint를 필수로 요구한다. RFC8414의 선택 조건과 구분하여 브라우저 grant를 거부하는 호환 endpoint를 제공하고 지원 목록은 client_credentials/빈 response_types로 유지했다. Client는 이 endpoint를 호출하지 않는다. 학습 서비스는 메모리·loopback HTTP이며 운영 IdP 전체 구축이나 장애 분류까지 구현한 것으로 간주하지 않는다.
+- 2026-10-13 도구별 권한 보충: opaque 토큰 전달과 SDK 검사·실제 호출을 연결하고 최종 결과를 확인했다. 도구별 scope 구분을 지적한 답변에 부족했던 API 설명을 보완했다. 설치 SDK의 tool()에는 scope 설정 인자가 없으며 get_access_token()은 검증된 요청 정보를 읽고 ContextVar로 동시 요청의 문맥을 구분한다고 설명했다. 이후 도구별 검사 위치·조건·작업 전 순서의 이해를 확인했다(인증 기록). 실제 확장 구현·HTTP403 거부 응답·독립 운영 숙달은 미확인이다. OAuth scope 거부와 업무 ToolError의 구분을 유지한다.
+
+- 2026-10-13 대상별 접근 보충: OAuth 범위와 업무 접근 정책의 연결을 먼저 설명했다. 요청 입력과 서버 조회 값의 출처 혼동을 보충한 뒤 다른 부서 문서 사례에서 정보 출처와 거부 근거를 확인했다. 상세 답변과 교정 이력은 인증 기록에 보존한다. 전체 서버 확장은 구현하지 않았다.
+- 2026-10-13 OAuth·보안 핵심 수업 마무리: 기존 Token Passthrough 근거와 연결해 외부 API 자격 분리, 외부 데이터/작업 지시의 경계·자료형 검증의 한계·권한 검사만으로 작업 목적을 보장하지 못함을 보충했다. 이 구간은 설명과 이해 자기 보고이며 새 독립 적용 평가는 하지 않았다. 최소 감사 이벤트와 안전한 정보 선별을 설명하고 제공된 로그의 권한 허용/작업 timeout 실패 해석을 확인했다(인증 기록). 실제 실행은 준비된 기본 OAuth 발급·발견·도구 호출이며 권한 확장·공격 차단·감사 시스템이나 운영 IdP를 구축한 것으로 간주하지 않는다. 종료 시 현재 위치와 인덱스 라우팅을 점검했고 파일 분리·이동은 필요하지 않았다. 다음은 승인된 순서의5.2이다.
+
+- 2026-10-13 계획 대조 재검토: 주요 개념과 기본 실제 HTTP 실습은 다뤘지만 모든 세부 고지를 충분히 설명했다고 일반화한 완료 문구를 구체화했다. OAuth/OIDC 구분, 사전 등록/CIMD/호환 DCR 선택, 브라우저 인가 응답의 issuer 검사와 서버의 토큰 issuer 검사의 위치, OAuth 프록시의 클라이언트별 사용자 동의 연결을 마무리 정리에서 개요로 보강한다. 보강은 설명이며 독립 이해 평가로 쓰지 않는다. 등록 우선순위는 공식 명세와 대조해 기존 사전 등록이 있으면 그것을 먼저 사용하는 것으로 명확히 했다. Code+PKCE·등록/프록시·운영 제품 전체 구축은 승인된 선택 범위로 유지한다.
+
+- 2026-10-13 첫 OAuth 노트 작성·가독성 보완: 학습자가 전체 학습을 하나의 노트에 합치지 않고 구현과 독립적인 역할·발견·발급·사용/검증 흐름을 첫 문서로 정하기를 요청했다. 내용 논의와 파일명·제목·구성을 승인한 뒤 GPT-6.1 Sol/High 서브에이전트가 [접근 흐름 노트](../../notes/oauth2/mcp-oauth2-flow.md)를 작성했고 주 에이전트가 공식 명세와 흐름·용어·Markdown 구조를 검토·보완했다. 학습자의 긴 설명 문단에 대한 피드백에 섹션2/3 샘플을 제시하고 승인 후 문서 전체를 핵심 한 줄·그림·짧은 설명 블록·목록·메모·비교표로 수정했다. 공식 용어의 한글/영문 병기와 섹션별 첫 등장 설명을 유지했다. 이는 이번 노트의 작성 요구이며 공통 학습 규칙을 확장하지 않는다. 문서 작성이나 동의 답변만으로 이해 등급을 변경하지 않았다.
 
 - Error Handling 정보 분리 설명 보완: 학습자가 비밀값 노출 문제는 지적했으나 로그 항목/방법의 구체적 설명을 받지 못했다고 알렸다. 교사가 설명 부족을 인정해 예시·선별 로깅을 보충했고 이후의 로그 선택 근거는 Tools 기록에 보존했다. 설명 부족을 학습자의 오개념으로 평가하지 않는다.
 
